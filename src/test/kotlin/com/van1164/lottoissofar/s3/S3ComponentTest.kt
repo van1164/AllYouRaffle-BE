@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.mock.web.MockMultipartFile
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @SpringBootTest
 class S3ComponentTest @Autowired constructor(
@@ -14,9 +15,12 @@ class S3ComponentTest @Autowired constructor(
 
     @Test
     fun uploadTest(){
+        var key : String
         assertDoesNotThrow {
             val mockMultipart = MockMultipartFile("test",null)
-            s3Component.imageUpload(mockMultipart)
+            val imageUrl = s3Component.imageUpload(mockMultipart)
+            key = imageUrl.split("/")[3]
+            assertEquals(s3Component.getImage(key).key,key)
         }
     }
 }
