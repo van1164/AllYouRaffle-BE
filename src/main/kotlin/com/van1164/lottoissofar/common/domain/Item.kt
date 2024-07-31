@@ -16,5 +16,12 @@ data class Item(
     val imageUrl: String? = null,
 
     @Column(name = "description")
-    val description: String? = null
+    val description: String? = null,
+
+    @Column(name = "default_total_count")
+    val defaultTotalCount : Int = 0,
+
+    @OneToMany(fetch = FetchType.LAZY)
+    val raffleList : MutableList<Raffle>? = mutableListOf()
+
 ) : BaseEntity()

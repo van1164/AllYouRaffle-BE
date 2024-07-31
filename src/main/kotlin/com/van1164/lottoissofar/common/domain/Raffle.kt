@@ -1,6 +1,7 @@
 package com.van1164.lottoissofar.common.domain
 
 import jakarta.persistence.*
+import java.time.LocalDateTime
 import java.util.*
 
 @Entity
@@ -11,23 +12,31 @@ data class Raffle(
     val totalCount: Int = 0,
 
     @Column(name = "current_count")
-    val currentCount: Int = 0,
+    var currentCount: Int = 0,
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    val status: RaffleStatus,
+    var status: RaffleStatus,
 
     @Column(name = "completed_date")
-    @Temporal(TemporalType.DATE)
-    val completedDate: Date? = null,
+    @Temporal(TemporalType.TIMESTAMP)
+    var completedDate: LocalDateTime? = null,
 
-    @ManyToOne
+    @ManyToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "item", nullable = false)
-    val item: Item,
+    var item: Item,
 
     @ManyToOne
-    @Column(name = "user", nullable = false)
-    val user: User,
+    @JoinColumn(name = "user")
+    var winner: User? = null,
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_raffle_purchase",
+        joinColumns = [JoinColumn(name = "raffle_id")],
+        inverseJoinColumns = [JoinColumn(name = "user_id")]
+    )
+    var purchaseUsers : MutableList<User> = mutableListOf()
 ) : BaseEntity()
 
 enum class RaffleStatus {

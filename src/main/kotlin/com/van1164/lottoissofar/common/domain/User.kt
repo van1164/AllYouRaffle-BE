@@ -1,8 +1,6 @@
 package com.van1164.lottoissofar.common.domain
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import kotlin.random.Random
 
 @Entity
@@ -21,7 +19,16 @@ data class User(
     val nickname: String = createRandomNickname(),
 
     @Column(name = "password")
-    val password: String? = null
+    val password: String? = null,
+
+    @Column(name= "phone_number",nullable = false, unique = true)
+    val phoneNumber: String,
+
+    @OneToOne(cascade = [CascadeType.ALL])
+    var address: UserAddress?,
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "purchaseUsers")
+    var purchaseRaffles : MutableList<Raffle> = mutableListOf()
 ) : BaseEntity(){
 
     companion object{

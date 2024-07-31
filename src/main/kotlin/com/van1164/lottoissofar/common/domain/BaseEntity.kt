@@ -23,4 +23,7 @@ abstract class BaseEntity : Serializable {
     @LastModifiedDate
     @Column(name = "updated_date", nullable = false)
     var updatedDate: LocalDateTime? = null
+
+    @Column(name = "deleted_date", nullable = true)
+    var deletedDate : LocalDateTime? = null
 }

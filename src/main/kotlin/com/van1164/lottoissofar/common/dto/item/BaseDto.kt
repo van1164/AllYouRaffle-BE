@@ -1,4 +1,7 @@
 package com.van1164.lottoissofar.common.dto.item
 
-interface BaseDto {
+import com.van1164.lottoissofar.common.domain.Item
+
+interface BaseDto <T> {
+    fun toDomain() : T
 }
