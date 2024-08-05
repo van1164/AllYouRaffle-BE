@@ -6,10 +6,6 @@ import jakarta.persistence.*
 @Table(name = "user_addresses")
 data class UserAddress(
 
-
-    @OneToOne(mappedBy = "address")
-    var user: User?, // 사용자 ID
-
     @Column(nullable = false)
     val street: String, // 거리명
 
@@ -26,7 +22,11 @@ data class UserAddress(
     val country: String, // 국가명
 
     @Column
-    val isDefault: Boolean = false // 기본 주소 여부
+    val isDefault: Boolean = false, // 기본 주소 여부
+
+    @OneToOne(mappedBy = "address")
+    var user: User? = null, // 사용자 ID
+
 ) : BaseEntity() {
     override fun toString(): String {
         return "UserAddress(street='$street', city='$city', state='$state', postalCode='$postalCode', country='$country', isDefault=$isDefault)"

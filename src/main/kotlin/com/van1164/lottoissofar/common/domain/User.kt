@@ -6,11 +6,11 @@ import kotlin.random.Random
 @Entity
 @Table(name = "user")
 data class User(
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", unique = true, nullable = false)
     val userId: String,
 
-    @Column(name = "email")
-    val email: String? = null,
+    @Column(name = "email", nullable = false)
+    val email: String,
 
     @Column(name = "name", nullable = false)
     val name: String,
@@ -21,14 +21,18 @@ data class User(
     @Column(name = "password")
     val password: String? = null,
 
-    @Column(name= "phone_number",nullable = false, unique = true)
-    val phoneNumber: String,
+    @Column(name= "phone_number", unique = true)
+    var phoneNumber: String? = null,
 
     @OneToOne(cascade = [CascadeType.ALL])
-    var address: UserAddress?,
+    var address: UserAddress? = null,
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "purchaseUsers")
-    var purchaseRaffles : MutableList<Raffle> = mutableListOf()
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    var role : Role = Role.USER,
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = [CascadeType.ALL])
+    var purchaseHistoryList : MutableList<PurchaseHistory> = mutableListOf()
 ) : BaseEntity(){
 
     companion object{
@@ -43,4 +47,11 @@ data class User(
             return "$adjective$noun$number"
         }
     }
+
+}
+
+enum class Role(key: String, title: String) {
+    GUEST("ROLE_GUEST", "손님"),
+    USER("ROLE_USER", "일반 사용자"),
+    ADMIN("ROLE_ADMIN","관리자")
 }
