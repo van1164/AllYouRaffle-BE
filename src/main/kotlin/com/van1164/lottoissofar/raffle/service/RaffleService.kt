@@ -25,11 +25,11 @@ class RaffleService(
 ) {
 
 //    @Transactional
-    fun purchaseRaffle(raffleId: Long, userId: Long): ResponseEntity<PurchaseHistory> {
+    fun purchaseRaffle(raffleId: Long, user: User): ResponseEntity<PurchaseHistory> {
         val raffleLock: RLock = redissonClient.getLock("raffleLock:$raffleId")
         try {
             if (raffleLock.tryLock(10, TimeUnit.SECONDS)) {
-                return purchase(raffleId, userId)
+                return purchase(raffleId, user)
             } else {
                 throw GlobalExceptions.InternalErrorException("Raffle 결제 과정에서 시간초과가 발생했습니다.")
             }
@@ -43,7 +43,7 @@ class RaffleService(
     @Transactional
     fun purchase(
         raffleId: Long,
-        userId: Long
+        user: User
     ): ResponseEntity<PurchaseHistory> {
         val raffle = raffleRepository.findById(raffleId)
             .orElseThrow { GlobalExceptions.NotFoundException("Raffle을 찾을 수 없습니다.") }
@@ -55,8 +55,6 @@ class RaffleService(
         if (raffle.currentCount >= raffle.totalCount) {
             throw RaffleExceptions.AlreadyFinishedException("이미 완료된 Raffle입니다. 새로운 Raffle에 참가해주세요.")
         }
-
-        val user = userRepository.findById(userId).orElseThrow { GlobalExceptions.NotFoundException("사용자를 찾을 수 없습니다.") }
 
         if (purchaseHistoryJpaRepository.existsDistinctByUserAndRaffle(user, raffle)) {
             throw RaffleExceptions.AlreadyPurchasedException("이미 구매한 Raffle입니다.")
@@ -127,5 +125,9 @@ class RaffleService(
     private fun notifyNewRaffle(item: Item) {
         println("서버로 새 raffle 생성 알림")
         // 새로운 Raffle 시작 알림 로직 구현
+    }
+
+    fun getActiveRaffle(): List<Raffle> {
+        return raffleRepository.findAllByCompletedDateIsNotEmpty()
     }
 }
