@@ -1,5 +1,6 @@
 package com.van1164.lottoissofar.common.domain
 
+import com.amazonaws.services.ec2.model.Purchase
 import jakarta.persistence.*
 import java.time.LocalDateTime
 import java.util.*
@@ -13,6 +14,9 @@ data class Raffle(
 
     @Column(name = "current_count")
     var currentCount: Int = 0,
+
+    @Column(name = "ticket_price")
+    var ticketPrice : Int = 1000,
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -30,14 +34,11 @@ data class Raffle(
     @JoinColumn(name = "user")
     var winner: User? = null,
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "user_raffle_purchase",
-        joinColumns = [JoinColumn(name = "raffle_id")],
-        inverseJoinColumns = [JoinColumn(name = "user_id")]
-    )
-    var purchaseUsers : MutableList<User> = mutableListOf()
-) : BaseEntity()
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "raffle", cascade = [CascadeType.ALL])
+    var purchaseHistoryList : MutableList<PurchaseHistory> = mutableListOf()
+) : BaseEntity() {
+
+}
 
 enum class RaffleStatus {
     ACTIVE, INACTIVE, COMPLETED

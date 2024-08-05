@@ -5,6 +5,7 @@ plugins {
     kotlin("plugin.jpa") version "1.9.24"
     kotlin("jvm") version "1.9.24"
     kotlin("plugin.spring") version "1.9.24"
+    kotlin("plugin.allopen") version "2.0.0"
 }
 
 group = "com.van1164"
@@ -25,10 +26,17 @@ extra["snippetsDir"] = file("build/generated-snippets")
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-mail")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
-//    implementation("org.springframework.boot:spring-boot-starter-security")
-//    testImplementation("org.springframework.security:spring-security-test")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    testImplementation("org.springframework.security:spring-security-test")
+
+
+    implementation("io.jsonwebtoken:jjwt:0.9.1")
+    implementation("com.sun.xml.bind:jaxb-impl:4.0.1")
+    implementation("com.sun.xml.bind:jaxb-core:4.0.1")
+    // javax.xml.bind
+    implementation("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
 
 
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -57,6 +65,9 @@ dependencies {
     // redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.redisson:redisson-spring-boot-starter:3.31.0")
+
+    // https://mvnrepository.com/artifact/io.github.van1164/k6-executor
+    implementation("io.github.van1164:k6-executor:0.6.0")
 
 }
 

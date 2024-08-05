@@ -21,7 +21,10 @@ data class Item(
     @Column(name = "default_total_count")
     val defaultTotalCount : Int = 0,
 
-    @OneToMany(fetch = FetchType.LAZY)
-    val raffleList : MutableList<Raffle>? = mutableListOf()
+    @Column(name = "possible_raffle")
+    var possibleRaffle : Boolean = true,
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", orphanRemoval = true, cascade = [CascadeType.ALL])
+    val raffleList : MutableList<Raffle> = mutableListOf()
 
 ) : BaseEntity()
