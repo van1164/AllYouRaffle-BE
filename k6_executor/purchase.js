@@ -9,11 +9,18 @@ export let options = {
 
 export default function () {
     let userId = Math.floor(Math.random() * 10)+1;
-    let url = `http://localhost:8080/api/v1/raffle/purchase/`+raffleId+`/`+userId
-
-    let res = http.post(url);
+    let jwt= __ENV["JWT"+userId.toString()]
+    let url = `http://localhost:8080/api/v1/raffle/purchase/`+raffleId
+    const params = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+jwt,
+        },
+    };
+    let res = http.post(url,{},params);
     console.log(res.status)
     console.log(url)
+    console.log(jwt)
     check(res, {
         'is status 200': (r) => r.status === 200,
         'response time < 500ms': (r) => r.timings.duration < 50000,

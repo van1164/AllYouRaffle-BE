@@ -5,6 +5,7 @@ import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPl
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.van1164.lottoissofar.common.domain.*
+import com.van1164.lottoissofar.common.security.JwtUtil
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
 import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryJpaRepository
 import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
@@ -26,7 +27,8 @@ class RaffleControllerTest @Autowired constructor(
     val userJpaRepository: UserJpaRepository,
     val raffleJpaRepository: RaffleJpaRepository,
     val itemJpaRepository: ItemJpaRepository,
-    val purchaseHistoryJpaRepository: PurchaseHistoryJpaRepository
+    val purchaseHistoryJpaRepository: PurchaseHistoryJpaRepository,
+    val jwtUtil: JwtUtil
 ) {
 
     var fixtureMonkey: FixtureMonkey = FixtureMonkey.builder()
@@ -57,11 +59,14 @@ class RaffleControllerTest @Autowired constructor(
 
 
     //TODO : 아직 성공 못함
-    @RepeatedTest(10)
+    @RepeatedTest(1)
     fun concurrencyPurchase(){
         println(raffle.id)
         val args = HashMap<String,String>()
         args["RAFFLEID"] = raffle.id.toString()
+        for (i : Int in (1..10)){
+            args["JWT$i"] = jwtUtil.generateToken("test$i")
+        }
         val k6 = K6Executor.builder().scriptPath("k6_executor/purchase.js").args(args).build()
         val k6Result = k6.runTest()
         k6Result.printResult()
@@ -69,15 +74,13 @@ class RaffleControllerTest @Autowired constructor(
 //        assertEquals(k6Result.successRequest,5)
         val purchaseHistoryCount = purchaseHistoryJpaRepository.count()
         assertEquals(purchaseHistoryCount,5)
-
-
-
     }
 
     companion object {
+
         @JvmStatic
         @BeforeAll
-        fun beforeAll(@Autowired userJpaRepository: UserJpaRepository): Unit {
+        fun beforeAll(@Autowired userJpaRepository: UserJpaRepository, @Autowired jwtUtil: JwtUtil): Unit {
             userJpaRepository.deleteAll()
             for (i in 1..10) {
                 val userAddress = UserAddress(
@@ -96,7 +99,6 @@ class RaffleControllerTest @Autowired constructor(
                     "test$i",
                     userAddress,
                     Role.USER,
-
                 )
 
                 userAddress.user = user

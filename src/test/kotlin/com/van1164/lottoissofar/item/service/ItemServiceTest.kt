@@ -6,11 +6,16 @@ import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPl
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.van1164.lottoissofar.common.domain.Item
+import com.van1164.lottoissofar.common.domain.Raffle
+import com.van1164.lottoissofar.common.domain.RaffleStatus
 import com.van1164.lottoissofar.common.dto.item.CreateItemDto
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
+import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
+import jakarta.transaction.Transactional
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
@@ -28,13 +33,23 @@ class ItemServiceTest @Autowired constructor(
     val itemService: ItemService,
     val itemJpaRepository: ItemJpaRepository,
     @MockBean val s3Component: AmazonS3Client,
-    @PersistenceContext val em : EntityManager
+    @PersistenceContext val em : EntityManager,
+    val raffleJpaRepository: RaffleJpaRepository
 ) {
     var fixtureMonkey: FixtureMonkey = FixtureMonkey.builder()
         .plugin(KotlinPlugin())
         .plugin(JakartaValidationPlugin())
         .build()
 
+
+    lateinit var savedItem : Item
+
+    @BeforeEach
+    fun setup(){
+        savedItem = fixtureMonkey.giveMeBuilder<Item>().set("raffleList", mutableListOf<Raffle>()).setNull("id").sample().let {
+            itemJpaRepository.save(it)
+        }
+    }
 
 
     @RepeatedTest(10)
@@ -59,9 +74,9 @@ class ItemServiceTest @Autowired constructor(
     @DisplayName("item 삭제 테스트")
     fun deleteSuccess(){
         //given
-        val savedItem = fixtureMonkey.giveMeBuilder<Item>().setNull("id").sample().let {
-            itemJpaRepository.save(it)
-        }
+//        val savedItem = fixtureMonkey.giveMeBuilder<Item>().setNull("id").sample().let {
+//            itemJpaRepository.save(it)
+//        }
         assertNull(savedItem.deletedDate)
         val savedId = savedItem.id
         println(savedId)
@@ -83,5 +98,48 @@ class ItemServiceTest @Autowired constructor(
         assertThrows<GlobalExceptions.NotFoundException> {
             itemService.delete(10)
         }
+    }
+
+    @Test
+    @DisplayName("item 생성 중지")
+    fun stop(){
+        itemService.stop(savedItem.id)
+
+        em.clear()
+
+        val findItem = itemJpaRepository.findById(savedItem.id)
+
+        assertTrue(findItem.isPresent)
+        assertFalse(findItem.get().possibleRaffle)
+
+    }
+
+    @Test
+    @DisplayName("item 재개 및 raffle 시작 확인")
+    fun start(){
+        itemService.stop(savedItem.id)
+
+        em.clear()
+
+        val findItem = itemJpaRepository.findById(savedItem.id)
+
+        assertTrue(findItem.isPresent)
+        assertFalse(findItem.get().possibleRaffle)
+
+        val raffle = itemService.start(findItem.get().id).body!!
+
+        em.clear()
+
+        val startedItem = itemJpaRepository.findById(savedItem.id)
+
+        assertTrue(startedItem.isPresent)
+        assertTrue(startedItem.get().possibleRaffle)
+
+
+        val startedRaffle = raffleJpaRepository.findById(raffle.id)
+
+        assertTrue(startedRaffle.isPresent)
+        assertEquals(startedRaffle.get().status,RaffleStatus.ACTIVE)
+        assertEquals(startedRaffle.get().currentCount,0)
     }
 }

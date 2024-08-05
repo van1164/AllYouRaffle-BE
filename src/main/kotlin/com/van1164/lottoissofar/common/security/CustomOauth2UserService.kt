@@ -23,7 +23,7 @@ class CustomOAuth2UserService(
 ) : OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     @Transactional
-    override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
+    override fun loadUser(userRequest: OAuth2UserRequest): CustomOAuth2User {
         val delegate = DefaultOAuth2UserService()
         val oauth2User = delegate.loadUser(userRequest)
 
@@ -41,14 +41,17 @@ class CustomOAuth2UserService(
         val userId = "$registrationId:$email"
         println(userId)
 //        val attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oauth2User.attributes)
-
+//        oauth2User.attributes["userId"] = userId
         val user = findOrSave(userId,email,name)
 //        httpSession.setAttribute("user", SessionUser(user))
 
-        return DefaultOAuth2User(
-            setOf(SimpleGrantedAuthority(user.role.name)),
-            oauth2User.attributes,
-            userNameAttributeName
+        return CustomOAuth2User(
+            oauth2User = DefaultOAuth2User(
+                setOf(SimpleGrantedAuthority(user.role.name)),
+                oauth2User.attributes,
+                userNameAttributeName
+            ),
+            userId = userId
         )
     }
 

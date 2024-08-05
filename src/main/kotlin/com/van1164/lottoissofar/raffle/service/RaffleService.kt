@@ -24,14 +24,14 @@ class RaffleService(
     private val redissonClient: RedissonClient
 ) {
 
-    @Transactional
+//    @Transactional
     fun purchaseRaffle(raffleId: Long, userId: Long): ResponseEntity<PurchaseHistory> {
         val raffleLock: RLock = redissonClient.getLock("raffleLock:$raffleId")
         try {
             if (raffleLock.tryLock(10, TimeUnit.SECONDS)) {
                 return purchase(raffleId, userId)
             } else {
-                throw GlobalExceptions.InternalErrorException("Raffle 결제 과정에서 오류가 발생했습니다.")
+                throw GlobalExceptions.InternalErrorException("Raffle 결제 과정에서 시간초과가 발생했습니다.")
             }
         } finally {
             if (raffleLock.isHeldByCurrentThread) {

@@ -30,9 +30,11 @@ class OAuthSuccessHandler(
         request: HttpServletRequest, response: HttpServletResponse,
         authentication: Authentication
     ) {
-        val user = authentication.principal as OAuth2User
+        val user = authentication.principal as CustomOAuth2User
+        val userId = user.userId
+        println(userId)
         val accessToken: String = jwtUtil.generateToken(
-            username = user.name
+            username = userId
         )
 
 //        val cookie: ResponseCookie = ResponseCookie.from(JWTUtil.REFRESH_TOKEN, refreshToken)
