@@ -1,6 +1,7 @@
 package com.van1164.lottoissofar.common.domain
 
 import com.amazonaws.services.ec2.model.Purchase
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import java.time.LocalDateTime
 import java.util.*
@@ -30,10 +31,12 @@ data class Raffle(
     @JoinColumn(name = "item", nullable = false)
     var item: Item,
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user")
     var winner: User? = null,
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "raffle", cascade = [CascadeType.ALL])
     var purchaseHistoryList : MutableList<PurchaseHistory> = mutableListOf()
 ) : BaseEntity() {

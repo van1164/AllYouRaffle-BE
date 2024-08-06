@@ -1,5 +1,6 @@
 package com.van1164.lottoissofar.common.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import kotlin.random.Random
 
@@ -31,6 +32,7 @@ data class User(
     @Column(name = "role")
     var role : Role = Role.USER,
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = [CascadeType.ALL])
     var purchaseHistoryList : MutableList<PurchaseHistory> = mutableListOf()
 ) : BaseEntity(){

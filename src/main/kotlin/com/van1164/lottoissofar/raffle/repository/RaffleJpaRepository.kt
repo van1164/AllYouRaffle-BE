@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface RaffleJpaRepository : JpaRepository<Raffle,Long> {
 
-    fun findAllByCompletedDateIsNotEmpty(): List<Raffle>
+    fun findAllByCompletedDateIsNotNull(): List<Raffle>
 }

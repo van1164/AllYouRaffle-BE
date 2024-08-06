@@ -25,15 +25,12 @@ class JwtRequestFilter(
         var username: String? = null
         var jwt: String? = null
 
-        println("XXXXXXXXXXXXXXXXX")
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7)
             username = jwtUtil.extractUsername(jwt)
         }
 
-        println(jwt)
-        println(username)
         if (username != null && SecurityContextHolder.getContext().authentication == null && jwt !=null) {
             val userDetails = userDetailsService.loadUserByUsername(username) as CustomUserDetails
             println(userDetails)
