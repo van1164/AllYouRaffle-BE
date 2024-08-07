@@ -44,10 +44,9 @@ class CustomOAuth2UserService(
 //        oauth2User.attributes["userId"] = userId
         val user = findOrSave(userId,email,name)
 //        httpSession.setAttribute("user", SessionUser(user))
-
         return CustomOAuth2User(
             oauth2User = DefaultOAuth2User(
-                setOf(SimpleGrantedAuthority(user.role.name)),
+                setOf(SimpleGrantedAuthority(user.role.key)),
                 oauth2User.attributes,
                 userNameAttributeName
             ),

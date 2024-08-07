@@ -24,7 +24,7 @@ class RaffleService(
     private val redissonClient: RedissonClient
 ) {
 
-//    @Transactional
+    //    @Transactional
     fun purchaseRaffle(raffleId: Long, user: User): ResponseEntity<PurchaseHistory> {
         val raffleLock: RLock = redissonClient.getLock("raffleLock:$raffleId")
         try {
@@ -72,7 +72,7 @@ class RaffleService(
 
 
     private fun createPurchaseHistory(raffle: Raffle, user: User): PurchaseHistory {
-        val history = PurchaseHistory(user,raffle)
+        val history = PurchaseHistory(user, raffle)
         raffle.purchaseHistoryList.add(history)
         user.purchaseHistoryList.add(history)
         purchaseHistoryJpaRepository.save(history)
@@ -87,11 +87,11 @@ class RaffleService(
 //        raffleRepository.save(raffle)
         notifyWinner(winner)
         createNewRaffle(raffle)
-        notifyNewRaffle(raffle.item)
+//        notifyNewRaffle(raffle.item)
     }
 
     private fun createNewRaffle(raffle: Raffle) {
-        if(!raffle.item.possibleRaffle){
+        if (!raffle.item.possibleRaffle) {
             return
         }
         val newRaffle = Raffle(
@@ -101,13 +101,16 @@ class RaffleService(
             status = RaffleStatus.ACTIVE,
             item = raffle.item
         )
-        raffleRepository.save(newRaffle)
+
+        raffleRepository.save(newRaffle).run {
+            notifyNewRaffle(this)
+        }
     }
 
-    fun createNewRaffle(item : Item,totalCount : Int? = null, ticketPrice : Int? = null): Raffle {
+    fun createNewRaffle(item: Item, totalCount: Int? = null, ticketPrice: Int? = null): Raffle {
         val newRaffle = Raffle(
-            totalCount = totalCount?: item.defaultTotalCount,
-            ticketPrice = ticketPrice?: 1000,
+            totalCount = totalCount ?: item.defaultTotalCount,
+            ticketPrice = ticketPrice ?: 1000,
             currentCount = 0,
             status = RaffleStatus.ACTIVE,
             item = item
@@ -122,7 +125,7 @@ class RaffleService(
         // 알림 보내기 로직 구현
     }
 
-    private fun notifyNewRaffle(item: Item) {
+    private fun notifyNewRaffle(raffle: Raffle) {
         println("서버로 새 raffle 생성 알림")
         // 새로운 Raffle 시작 알림 로직 구현
     }

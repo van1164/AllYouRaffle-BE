@@ -1,5 +1,6 @@
 package com.van1164.lottoissofar.common.config
 
+import com.van1164.lottoissofar.common.security.CustomAuthenticationEntryPoint
 import com.van1164.lottoissofar.common.security.CustomOAuth2UserService
 import com.van1164.lottoissofar.common.security.JwtRequestFilter
 import com.van1164.lottoissofar.common.security.OAuthSuccessHandler
@@ -20,7 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SecurityConfig(
     private val customOAuth2UserService: CustomOAuth2UserService,
     private val oAuthSuccessHandler: OAuthSuccessHandler,
-    private val jwtRequestFilter: JwtRequestFilter
+    private val jwtRequestFilter: JwtRequestFilter,
+    private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint
 ) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -35,6 +37,11 @@ class SecurityConfig(
                     .permitAll()
                     .requestMatchers("/", "/error", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js")
                     .permitAll()
+                    .requestMatchers("/api/v1/raffle/active")
+                    .permitAll()
+                    .requestMatchers("/health")
+                    .permitAll()
+                    .requestMatchers("/api/v1/item/**").hasRole("ADMIN")
                     .requestMatchers("/**").authenticated()
             }
             .logout {
@@ -46,6 +53,9 @@ class SecurityConfig(
             .oauth2Login (
                 Customizer.withDefaults()
             )
+            .exceptionHandling {
+                it.authenticationEntryPoint(customAuthenticationEntryPoint)
+            }
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }

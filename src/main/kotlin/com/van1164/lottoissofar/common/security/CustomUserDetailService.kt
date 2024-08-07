@@ -4,6 +4,7 @@ import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import com.van1164.lottoissofar.user.service.UserService
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
@@ -28,7 +29,8 @@ class CustomUserDetailService(
             nickname = user.nickname,
             password = user.password,
             addressVerified = user.address != null,
-            phoneNumberVerified = user.phoneNumber != null
+            phoneNumberVerified = user.phoneNumber != null,
+            authorities = setOf(SimpleGrantedAuthority(user.role.key))
         )
     }
 }
