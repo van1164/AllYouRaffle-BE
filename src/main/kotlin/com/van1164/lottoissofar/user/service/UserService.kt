@@ -3,14 +3,17 @@ package com.van1164.lottoissofar.user.service
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.domain.UserAddress
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
+import com.van1164.lottoissofar.common.security.JwtUtil
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 class UserService(
     private val userRepository: UserJpaRepository,
+    private val jwtUtil: JwtUtil
 ) {
     @Transactional
     fun registerUserAddress(userId: String, userAddress: UserAddress) {
@@ -31,6 +34,17 @@ class UserService(
     fun findByUserId(userId: String): User {
         return userRepository.findUserByUserId(userId)
             ?: run { throw GlobalExceptions.NotFoundException("not found loginId : $userId") };
+    }
+
+    @Transactional
+    fun saveTestUser(): String {
+        val user = User(
+            "testUser" + UUID.randomUUID().toString(),
+            "testEmaiil" + UUID.randomUUID().toString(),
+            UUID.randomUUID().toString()
+        )
+        userRepository.save(user)
+        return jwtUtil.generateToken(user.userId)
     }
 
 //    @Transactional

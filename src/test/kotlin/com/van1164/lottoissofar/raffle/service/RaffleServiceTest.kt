@@ -99,7 +99,7 @@ class RaffleServiceTest @Autowired constructor(
     fun purchaseRaffleTest() {
         var purchaseHistoryId : Long
         assertDoesNotThrow {
-            val result = raffleService.purchaseRaffle(raffleId = raffle.id, userId = user.id).body
+            val result = raffleService.purchaseRaffle(raffleId = raffle.id, user = user).body
             println(result)
             purchaseHistoryId =  result!!.id
             println(purchaseHistoryId)
