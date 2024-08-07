@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.Query
 interface PurchaseHistoryJpaRepository : JpaRepository<PurchaseHistory,Long> {
 
     fun existsDistinctByUserAndRaffle(user: User, raffle: Raffle) : Boolean
+
+    fun findAllByUser(user:User) : List<PurchaseHistory>
 }
