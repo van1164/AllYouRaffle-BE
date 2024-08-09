@@ -46,8 +46,7 @@ class RaffleControllerTest @Autowired constructor(
         raffleJpaRepository.deleteAll()
         itemJpaRepository.deleteAll()
 
-        val item = fixtureMonkey.giveMeBuilder<Item>().setNull("id").set("raffleList", mutableListOf<Raffle>()).set("defaultTotalCount", 10).sample()
-
+        val item = fixtureMonkey.giveMeBuilder<Item>().setNull("id").set("raffleList", mutableListOf<Raffle>()).set("defaultTotalCount", 10).set("possibleRaffle",true).sample()
         val insertRaffle = Raffle(
             totalCount = 5,
             item = item,
@@ -80,7 +79,8 @@ class RaffleControllerTest @Autowired constructor(
 
         @JvmStatic
         @BeforeAll
-        fun beforeAll(@Autowired userJpaRepository: UserJpaRepository, @Autowired jwtUtil: JwtUtil): Unit {
+        fun beforeAll(@Autowired userJpaRepository: UserJpaRepository, @Autowired jwtUtil: JwtUtil, @Autowired raffleJpaRepository: RaffleJpaRepository): Unit {
+            raffleJpaRepository.deleteAll()
             userJpaRepository.deleteAll()
             for (i in 1..10) {
                 val userAddress = UserAddress(

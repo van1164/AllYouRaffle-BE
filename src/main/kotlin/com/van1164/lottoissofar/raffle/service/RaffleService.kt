@@ -1,27 +1,36 @@
 package com.van1164.lottoissofar.raffle.service
 
+import com.van1164.lottoissofar.common.discord.DiscordService
 import com.van1164.lottoissofar.common.domain.*
+import com.van1164.lottoissofar.common.email.EmailService
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
 import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryJpaRepository
 import com.van1164.lottoissofar.raffle.exception.RaffleExceptions
 import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.redisson.api.RLock
 import org.redisson.api.RedissonClient
 import org.springframework.http.ResponseEntity
+import org.springframework.scheduling.annotation.Async
+import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 @Service
+@EnableAsync
 class RaffleService(
     private val raffleRepository: RaffleJpaRepository,
     private val userRepository: UserJpaRepository,
     private val itemRepository: ItemJpaRepository,
     private val purchaseHistoryJpaRepository: PurchaseHistoryJpaRepository,
-    private val redissonClient: RedissonClient
+    private val redissonClient: RedissonClient,
+    private val emailService: EmailService,
+    private val discordService: DiscordService
 ) {
 
     //    @Transactional
@@ -56,9 +65,9 @@ class RaffleService(
             throw RaffleExceptions.AlreadyFinishedException("이미 완료된 Raffle입니다. 새로운 Raffle에 참가해주세요.")
         }
 
-        if (purchaseHistoryJpaRepository.existsDistinctByUserAndRaffle(user, raffle)) {
-            throw RaffleExceptions.AlreadyPurchasedException("이미 구매한 Raffle입니다.")
-        }
+//        if (purchaseHistoryJpaRepository.existsDistinctByUserAndRaffle(user, raffle)) {
+//            throw RaffleExceptions.AlreadyPurchasedException("이미 구매한 Raffle입니다.")
+//        }
 
         raffle.currentCount += 1
         if (raffle.currentCount == raffle.totalCount) {
@@ -85,8 +94,14 @@ class RaffleService(
         raffle.status = RaffleStatus.COMPLETED
         raffle.completedDate = LocalDateTime.now()
 //        raffleRepository.save(raffle)
-        notifyWinner(winner)
+        GlobalScope.launch {
+            notifyWinner(raffle,winner)
+        }
+
         createNewRaffle(raffle)
+
+
+
 //        notifyNewRaffle(raffle.item)
     }
 
@@ -103,7 +118,9 @@ class RaffleService(
         )
 
         raffleRepository.save(newRaffle).run {
-            notifyNewRaffle(this)
+            GlobalScope.launch {
+                notifyNewRaffle(this@run)
+            }
         }
     }
 
@@ -120,13 +137,34 @@ class RaffleService(
         return newRaffle
     }
 
-    private fun notifyWinner(winner: User) {
-        println("알림 전송")
+    fun notifyWinner(raffle: Raffle, winner : User) {
+        try {
+            emailService.sendEmail("Raffle 당첨을 축하드립니다.",raffle,winner)
+        } catch (e:Exception){
+            println("MAIL ERROR")
+            println("사용자 ID: "+ winner.userId+"\n raffle ID: "+raffle.id +"| 메일 전송실패")
+        }
+
+
+        try {
+            discordService.sendMessage(raffle.id.toString() + "번 래플 당첨자 발생."+"(${raffle.item.name})\n 당첨자 아이디 : ${winner.userId}")
+        } catch (e:Exception){
+            println("DISCORD ERROR")
+            println("사용자 ID: "+ winner.userId+"\n raffle ID: "+raffle.id +"| 디스코드 전송 실패")
+        }
+
+
         // 알림 보내기 로직 구현
     }
 
-    private fun notifyNewRaffle(raffle: Raffle) {
-        println("서버로 새 raffle 생성 알림")
+    fun notifyNewRaffle(raffle: Raffle) {
+        try {
+            discordService.sendMessage(raffle.id.toString() + "번 래플 새로 시작됨."+"(${raffle.item.name})")
+        } catch (e:Exception){
+            println("DISCORD ERROR")
+            println("raffle ID: "+raffle.id +"| 새 래플 시작 디스코드 전송 실패")
+        }
+
         // 새로운 Raffle 시작 알림 로직 구현
     }
 
