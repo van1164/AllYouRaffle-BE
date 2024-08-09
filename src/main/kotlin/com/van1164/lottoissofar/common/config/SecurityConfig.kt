@@ -41,7 +41,7 @@ class SecurityConfig(
                     .permitAll()
                     .requestMatchers("/health")
                     .permitAll()
-                    .requestMatchers("/api/v1/item/**").hasRole("ADMIN")
+                    .requestMatchers("/api/v1/item/**","api/v1/post/**").hasRole("ADMIN")
                     .requestMatchers("/**").authenticated()
             }
             .logout {
