@@ -1,5 +1,6 @@
 package com.van1164.lottoissofar.common.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import java.io.Serializable
 
@@ -24,6 +25,7 @@ data class Item(
     @Column(name = "possible_raffle")
     var possibleRaffle : Boolean = true,
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", orphanRemoval = true, cascade = [CascadeType.ALL])
     val raffleList : MutableList<Raffle> = mutableListOf()
 

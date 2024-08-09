@@ -131,6 +131,10 @@ class RaffleService(
     }
 
     fun getActiveRaffle(): List<Raffle> {
-        return raffleRepository.findAllByCompletedDateIsNotNull()
+        return raffleRepository.findAllByStatusIsACTIVE()
+    }
+
+    fun getAll(): List<Raffle> {
+        return raffleRepository.findAll()
     }
 }

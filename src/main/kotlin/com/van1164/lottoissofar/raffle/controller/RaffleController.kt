@@ -33,4 +33,9 @@ class RaffleController(
     fun getActive(): List<Raffle> {
         return raffleService.getActiveRaffle()
     }
+
+    @GetMapping("/all")
+    fun getAll(): List<Raffle> {
+        return raffleService.getAll()
+    }
 }
