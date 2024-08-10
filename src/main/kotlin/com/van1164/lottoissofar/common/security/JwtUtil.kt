@@ -20,7 +20,6 @@ class JwtUtil(
     }
 
     fun generateToken(username: String): String {
-        println("secretKey : $secretKey")
         val claims: Claims = Jwts.claims().setSubject(username)
         val now = Date()
         val validity = Date(now.time + 1000 * 60 * 60 * 10) // 10시간 유효

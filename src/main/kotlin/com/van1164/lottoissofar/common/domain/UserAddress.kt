@@ -1,5 +1,6 @@
 package com.van1164.lottoissofar.common.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 
 @Entity
@@ -24,6 +25,7 @@ data class UserAddress(
     @Column
     val isDefault: Boolean = false, // 기본 주소 여부
 
+    @JsonIgnore
     @OneToOne(mappedBy = "address")
     var user: User? = null, // 사용자 ID
 

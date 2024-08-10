@@ -2,6 +2,8 @@ package com.van1164.lottoissofar.user.service
 
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.domain.UserAddress
+import com.van1164.lottoissofar.common.dto.user.PhoneNumberRequestDto
+import com.van1164.lottoissofar.common.dto.user.UserAddressRequestDto
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.common.security.JwtUtil
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
@@ -16,18 +18,13 @@ class UserService(
     private val jwtUtil: JwtUtil
 ) {
     @Transactional
-    fun registerUserAddress(userId: String, userAddress: UserAddress) {
-        findByUserId(userId).apply {
-            this.address = userAddress
-            userAddress.user = this
-        }
+    fun registerUserAddress(user: User, userAddress: UserAddressRequestDto) {
+        user.address = userAddress.toDomain()
     }
 
     @Transactional
-    fun registerPhoneNumber(userId: String, phoneNumber : String) {
-        findByUserId(userId).apply {
-            this.phoneNumber = phoneNumber
-        }
+    fun registerPhoneNumber(user: User, phoneNumberRequestDto: PhoneNumberRequestDto) {
+        user.phoneNumber = phoneNumberRequestDto.phoneNumber
     }
 
 

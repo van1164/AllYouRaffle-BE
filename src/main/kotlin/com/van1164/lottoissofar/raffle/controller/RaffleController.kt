@@ -5,6 +5,7 @@ import com.van1164.lottoissofar.common.domain.Raffle
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.security.CustomUserDetails
 import com.van1164.lottoissofar.raffle.service.RaffleService
+import io.swagger.v3.oas.annotations.Parameter
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -24,6 +25,7 @@ class RaffleController(
     @PostMapping("/purchase/{raffleId}")
     fun purchase(
         @PathVariable(value = "raffleId") raffleId : Long,
+        @Parameter(hidden = true)
         user : User
     ): ResponseEntity<PurchaseHistory> {
         return raffleService.purchaseRaffle(raffleId,user)

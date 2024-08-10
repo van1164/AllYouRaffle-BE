@@ -3,6 +3,8 @@ package com.van1164.lottoissofar.user.service
 import com.van1164.lottoissofar.common.domain.Role
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.domain.UserAddress
+import com.van1164.lottoissofar.common.dto.user.PhoneNumberRequestDto
+import com.van1164.lottoissofar.common.dto.user.UserAddressRequestDto
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeAll
@@ -41,14 +43,15 @@ class UserServiceTest @Autowired constructor(
         assertNotNull(currentUser)
         assertNull(currentUser.address)
 
-        val userAddress = UserAddress(
+        val userAddress = UserAddressRequestDto(
             "tt",
             "tt",
             "te",
             "sd",
             "sdf",
+            true
         )
-        userService.registerUserAddress(user.userId,userAddress)
+        userService.registerUserAddress(user,userAddress)
 
         val thenUser = userJpaRepository.findUserByUserId(user.userId)
         assertNotNull(thenUser)
@@ -64,7 +67,7 @@ class UserServiceTest @Autowired constructor(
 
         //when
         val phoneNumber = "testPhoneNumber"
-        userService.registerPhoneNumber(user.userId,phoneNumber)
+        userService.registerPhoneNumber(user, PhoneNumberRequestDto(phoneNumber))
 
         val thenUser = userJpaRepository.findUserByUserId(user.userId)
         assertNotNull(thenUser)
