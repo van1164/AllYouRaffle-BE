@@ -25,6 +25,9 @@ data class User(
     @Column(name= "phone_number", unique = true)
     var phoneNumber: String? = null,
 
+    @Column(name = "profile_image_url")
+    val profileImageUrl: String? = null,
+
     @OneToOne(cascade = [CascadeType.ALL])
     var address: UserAddress? = null,
 

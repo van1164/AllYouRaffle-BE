@@ -75,6 +75,17 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.1")
+
+// https://mvnrepository.com/artifact/com.google.api-client/google-api-client
+    implementation("com.google.api-client:google-api-client:2.6.0")
+
+// https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client
+    implementation("com.google.oauth-client:google-oauth-client:1.36.0")
+
+
+// https://mvnrepository.com/artifact/com.google.http-client/google-http-client-gson
+    implementation("com.google.http-client:google-http-client-gson:1.44.2")
+
 }
 
 kotlin {

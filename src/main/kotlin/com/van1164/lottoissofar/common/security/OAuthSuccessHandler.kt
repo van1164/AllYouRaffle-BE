@@ -5,8 +5,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
-import org.springframework.security.oauth2.core.user.OAuth2User
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 import org.springframework.stereotype.Component
 import java.io.IOException
@@ -34,7 +32,7 @@ class OAuthSuccessHandler(
         val user = authentication.principal as CustomOAuth2User
         val userId = user.userId
         println(userId)
-        val accessToken: String = jwtUtil.generateToken(
+        val accessToken: String = jwtUtil.generateJwtToken(
             username = userId
         )
 

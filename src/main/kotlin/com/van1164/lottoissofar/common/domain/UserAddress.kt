@@ -8,13 +8,31 @@ import jakarta.persistence.*
 data class UserAddress(
 
     @Column(nullable = false)
-    val street: String, // 거리명
+    val address: String, // 주소
 
     @Column(nullable = false)
-    val city: String, // 도시명
+    val addressEnglish: String, // 주소
 
     @Column(nullable = false)
-    val state: String, // 주/도명
+    val bname : String,
+
+    @Column(nullable = false)
+    val jibunAddress: String, // 지번
+
+    @Column(nullable = false)
+    val jibunAddressEnglish: String, // 지번 영어
+
+    @Column(nullable = false)
+    val roadAddress : String,
+
+    @Column(nullable = false)
+    val sido: String, // 주/도명
+
+    @Column(nullable = false)
+    val sigungu: String, // 시 구
+
+    @Column(nullable = false)
+    val detail: String, // 몇 동 몇호
 
     @Column(nullable = false)
     val postalCode: String, // 우편번호
@@ -27,10 +45,12 @@ data class UserAddress(
 
     @JsonIgnore
     @OneToOne(mappedBy = "address")
-    var user: User? = null, // 사용자 ID
+    var user: User? = null, // 사용자 IDs
+
 
 ) : BaseEntity() {
     override fun toString(): String {
-        return "UserAddress(street='$street', city='$city', state='$state', postalCode='$postalCode', country='$country', isDefault=$isDefault)"
+        return "UserAddress(address='$address', addressEnglish='$addressEnglish', bname='$bname', jibunAddress='$jibunAddress', jibunAddressEnglish='$jibunAddressEnglish', roadAddress='$roadAddress', sido='$sido', sigungu='$sigungu', detail='$detail', postalCode='$postalCode', country='$country', isDefault=$isDefault)"
     }
+
 }

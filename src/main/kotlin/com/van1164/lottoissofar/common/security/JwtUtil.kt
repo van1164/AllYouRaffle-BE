@@ -18,11 +18,23 @@ class JwtUtil(
     fun init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.toByteArray())
     }
+    
 
-    fun generateToken(username: String): String {
-        val claims: Claims = Jwts.claims().setSubject(username)
+
+    fun generateJwtToken(username: String): String {
         val now = Date()
         val validity = Date(now.time + 1000 * 60 * 60 * 10) // 10시간 유효
+        return generateToken(username, now, validity)
+    }
+
+    fun generateRefreshToken(username: String): String {
+        val now = Date()
+        val validity = Date(now.time + Int.MAX_VALUE) // 10시간 유효
+        return generateToken(username, now, validity)
+    }
+
+    private fun generateToken(username: String, now: Date, validity: Date): String {
+        val claims: Claims = Jwts.claims().setSubject(username)
         return Jwts.builder()
             .setClaims(claims)
             .setIssuedAt(now)
@@ -45,7 +57,7 @@ class JwtUtil(
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).body
     }
 
-    private fun isTokenExpired(claims: Claims): Boolean {
+    fun isTokenExpired(claims: Claims): Boolean {
         return claims.expiration.before(Date())
     }
 }

@@ -53,6 +53,12 @@ class RaffleServiceTest @Autowired constructor(
             "",
             "",
             "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             ""
         )
         user = User(
@@ -62,6 +68,7 @@ class RaffleServiceTest @Autowired constructor(
             "test",
             "test",
             "test",
+            "",
             userAddress,
             Role.USER
         )

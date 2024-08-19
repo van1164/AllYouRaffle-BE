@@ -44,11 +44,17 @@ class UserServiceTest @Autowired constructor(
         assertNull(currentUser.address)
 
         val userAddress = UserAddressRequestDto(
-            "tt",
-            "tt",
-            "te",
-            "sd",
-            "sdf",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             true
         )
         userService.registerUserAddress(user,userAddress)

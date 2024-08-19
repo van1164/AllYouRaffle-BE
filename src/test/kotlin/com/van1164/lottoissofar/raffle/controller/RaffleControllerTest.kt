@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.RepeatedTest
-import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.Rollback
@@ -64,7 +63,7 @@ class RaffleControllerTest @Autowired constructor(
         val args = HashMap<String,String>()
         args["RAFFLEID"] = raffle.id.toString()
         for (i : Int in (1..10)){
-            args["JWT$i"] = jwtUtil.generateToken("test$i")
+            args["JWT$i"] = jwtUtil.generateJwtToken("test$i")
         }
         val k6 = K6Executor.builder().scriptPath("k6_executor/purchase.js").args(args).build()
         val k6Result = k6.runTest()
@@ -88,6 +87,12 @@ class RaffleControllerTest @Autowired constructor(
                     "",
                     "",
                     "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
                     ""
                 )
                 val user = User(
@@ -97,6 +102,7 @@ class RaffleControllerTest @Autowired constructor(
                     "test",
                     "test",
                     "test$i",
+                    "",
                     userAddress,
                     Role.USER,
                 )

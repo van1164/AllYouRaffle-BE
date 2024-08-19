@@ -9,6 +9,7 @@ import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryJpaRe
 import com.van1164.lottoissofar.raffle.exception.RaffleExceptions
 import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.redisson.api.RLock
@@ -88,6 +89,7 @@ class RaffleService(
         return history
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun completeRaffle(raffle: Raffle) {
         val winner = raffle.purchaseHistoryList.random().user
         raffle.winner = winner
@@ -105,6 +107,7 @@ class RaffleService(
 //        notifyNewRaffle(raffle.item)
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun createNewRaffle(raffle: Raffle) {
         if (!raffle.item.possibleRaffle) {
             return
@@ -168,11 +171,35 @@ class RaffleService(
         // 새로운 Raffle 시작 알림 로직 구현
     }
 
-    fun getActiveRaffle(): List<Raffle> {
+    fun getActive(): List<Raffle> {
         return raffleRepository.findAllByStatusIsACTIVE()
+    }
+
+    fun getActiveFreeRaffle(): List<Raffle> {
+        return raffleRepository.findAllByStatusIsACTIVEAndFree()
+    }
+
+    fun getActiveNotFreeRaffle(): List<Raffle> {
+        return raffleRepository.findAllByStatusIsACTIVEAndNotFree()
     }
 
     fun getAll(): List<Raffle> {
         return raffleRepository.findAll()
+    }
+
+    fun getDetailFree(raffleId: Long): ResponseEntity<Raffle> {
+        return raffleRepository.findByStatusIsACTIVEAndFree(raffleId)?.let{
+            ResponseEntity.ok(it)
+        } ?: run{
+            throw GlobalExceptions.NotFoundException("이미 마감된 래플입니다.")
+        }
+    }
+
+    fun getDetailNotFree(raffleId: Long): ResponseEntity<Raffle> {
+        return raffleRepository.findByStatusIsACTIVEAndNotFree(raffleId)?.let{
+            ResponseEntity.ok(it)
+        } ?: run{
+            throw GlobalExceptions.NotFoundException("이미 마감된 래플입니다.")
+        }
     }
 }

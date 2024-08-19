@@ -27,6 +27,9 @@ data class Raffle(
     @Temporal(TemporalType.TIMESTAMP)
     var completedDate: LocalDateTime? = null,
 
+    @Column(name = "is_free")
+    val isFree: Boolean = false,
+
     @ManyToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "item", nullable = false)
     var item: Item,

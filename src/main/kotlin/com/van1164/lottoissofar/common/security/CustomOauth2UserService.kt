@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CustomOAuth2UserService(
     private val userRepository: UserJpaRepository,
-    private val userService : UserService,
+    private val userService: UserService,
     private val httpSession: HttpSession
 ) : OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
@@ -28,40 +28,67 @@ class CustomOAuth2UserService(
         val oauth2User = delegate.loadUser(userRequest)
 
         val registrationId = userRequest.clientRegistration.registrationId
-        val userNameAttributeName =
+        val userNameAttributeNameKey =
             userRequest.clientRegistration.providerDetails.userInfoEndpoint.userNameAttributeName
-
-        println(oauth2User)
-        println(registrationId)
-        println(userNameAttributeName)
+        val userNameAttributeNameValue = oauth2User.attributes[userNameAttributeNameKey] as String?
+            ?: run { throw GlobalExceptions.InternalErrorException("소셜로그인에서 이메일을 불러올 수 없습니다.") }
         val email = oauth2User.attributes["email"] as String?
             ?: run { throw GlobalExceptions.InternalErrorException("소셜로그인에서 이메일을 불러올 수 없습니다.") }
         val name = oauth2User.attributes["name"] as String?
             ?: run { throw GlobalExceptions.InternalErrorException("소셜로그인에서 이름을 불러올 수 없습니다.") }
+
+        println("VVVVVVVVVVVVVVVVVVVVVV")
+        println(oauth2User.attributes.toString())
+        val profileImageUrl = oauth2User.attributes["picture"] as String?
+        return customOAuth2User(
+            registrationId,
+            email,
+            name,
+            profileImageUrl,
+            oauth2User.attributes,
+            userNameAttributeNameKey,
+            userNameAttributeNameValue
+        )
+    }
+
+    fun customOAuth2User(
+        registrationId: String,
+        email: String,
+        name: String,
+        profileImageUrl: String?,
+        attributes: MutableMap<String, Any>? = null,
+        userNameAttributeNameKey: String = "sub",
+        userNameAttributeNameValue :String
+    ): CustomOAuth2User {
         val userId = "$registrationId:$email"
-        println(userId)
-//        val attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oauth2User.attributes)
-//        oauth2User.attributes["userId"] = userId
-        val user = findOrSave(userId,email,name)
-//        httpSession.setAttribute("user", SessionUser(user))
+
+        val user = findOrSave(userId, email, name, profileImageUrl)
+        val attr = attributes ?: let {
+            mutableMapOf<String, Any>("email" to email, "name" to name,userNameAttributeNameKey to userNameAttributeNameValue).apply {
+                profileImageUrl?.run { put("picture", this) }
+            }
+        }
+        println(attr)
+
         return CustomOAuth2User(
             oauth2User = DefaultOAuth2User(
                 setOf(SimpleGrantedAuthority(user.role.key)),
-                oauth2User.attributes,
-                userNameAttributeName
+                attr,
+                userNameAttributeNameKey
             ),
             userId = userId
         )
     }
 
 
-    private fun findOrSave(userId: String, email: String, name: String): User {
+    private fun findOrSave(userId: String, email: String, name: String, profileImageUrl: String?): User {
         val user = userRepository.findUserByUserId(userId)
             ?: User(
-                    email = email,
-                    name = name,
-                    userId = userId
-                )
+                email = email,
+                name = name,
+                userId = userId,
+                profileImageUrl = profileImageUrl
+            )
         return userRepository.save(user)
     }
 }

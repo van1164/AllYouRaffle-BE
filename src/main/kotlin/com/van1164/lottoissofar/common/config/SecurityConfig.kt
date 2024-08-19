@@ -37,7 +37,10 @@ class SecurityConfig(
                     .permitAll()
                     .requestMatchers("/", "/error", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET,"/api/v1/raffle/active","/api/v1/raffle/all")
+                    //모바일 사용자 로그인
+                    .requestMatchers("/api/v1/login/**").permitAll()
+
+                    .requestMatchers(HttpMethod.GET,"/api/v1/raffle/**")
                     .permitAll()
                     .requestMatchers(HttpMethod.POST,"/api/v1/user/create_test_user")
                     .permitAll()

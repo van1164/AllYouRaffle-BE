@@ -24,17 +24,42 @@ class RaffleController(
 
     @PostMapping("/purchase/{raffleId}")
     fun purchase(
-        @PathVariable(value = "raffleId") raffleId : Long,
+        @PathVariable(value = "raffleId") raffleId: Long,
         @Parameter(hidden = true)
-        user : User
+        user: User
     ): ResponseEntity<PurchaseHistory> {
-        return raffleService.purchaseRaffle(raffleId,user)
+        return raffleService.purchaseRaffle(raffleId, user)
     }
 
     @GetMapping("/active")
     fun getActive(): List<Raffle> {
-        return raffleService.getActiveRaffle()
+        return raffleService.getActive()
     }
+
+    @GetMapping("/active/not_free")
+    fun getActiveNotFree(): List<Raffle> {
+        return raffleService.getActiveNotFreeRaffle()
+    }
+
+    @GetMapping("/active/free")
+    fun getActiveFree(): List<Raffle> {
+        return raffleService.getActiveFreeRaffle()
+    }
+
+    @GetMapping("/active/not_free/detail/{raffleId}")
+    fun getDetailNotFree(
+        @PathVariable(value = "raffleId") raffleId: Long
+    ): ResponseEntity<Raffle> {
+        return raffleService.getDetailNotFree(raffleId)
+    }
+
+    @GetMapping("/active/free/detail/{raffleId}")
+    fun getDetailFree(
+        @PathVariable(value = "raffleId") raffleId: Long
+    ): ResponseEntity<Raffle> {
+        return raffleService.getDetailFree(raffleId)
+    }
+
 
     @GetMapping("/all")
     fun getAll(): List<Raffle> {
