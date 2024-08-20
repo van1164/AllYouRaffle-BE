@@ -6,12 +6,15 @@ plugins {
     kotlin("jvm") version "1.9.24"
     kotlin("plugin.spring") version "1.9.24"
     kotlin("plugin.allopen") version "2.0.0"
+    kotlin("kapt") version "1.9.24"
 }
 
 group = "com.van1164"
 version = "0.0.1-SNAPSHOT"
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
@@ -20,6 +23,14 @@ java {
 repositories {
     mavenCentral()
 }
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
+val queryDslVersion: String by extra
 
 extra["snippetsDir"] = file("build/generated-snippets")
 
@@ -86,12 +97,40 @@ dependencies {
 // https://mvnrepository.com/artifact/com.google.http-client/google-http-client-gson
     implementation("com.google.http-client:google-http-client-gson:1.44.2")
 
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    //Querydsl
+    implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
+    kapt("jakarta.annotation:jakarta.annotation-api")
+    kapt("jakarta.persistence:jakarta.persistence-api")
+}
+
+val generated = file("src/main/generated")
+tasks.withType<JavaCompile> {
+    options.generatedSourceOutputDirectory.set(generated)
 }
 
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
     }
+}
+
+sourceSets {
+    main {
+        kotlin.srcDirs += generated
+    }
+}
+
+tasks.named("clean") {
+    doLast {
+        generated.deleteRecursively()
+    }
+}
+
+kapt {
+    generateStubs = true
 }
 
 tasks.withType<Test> {
