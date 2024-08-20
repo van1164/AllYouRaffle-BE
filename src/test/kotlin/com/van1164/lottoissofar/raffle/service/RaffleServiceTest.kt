@@ -7,7 +7,7 @@ import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.van1164.lottoissofar.common.domain.*
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
 import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryJpaRepository
-import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
+import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
@@ -25,7 +25,7 @@ import kotlin.test.assertEquals
 class RaffleServiceTest @Autowired constructor(
     val raffleService: RaffleService,
     val userJpaRepository: UserJpaRepository,
-    val raffleJpaRepository: RaffleJpaRepository,
+    val raffleRepository: RaffleRepository,
     val itemJpaRepository: ItemJpaRepository,
     val purchaseHistoryJpaRepository: PurchaseHistoryJpaRepository,
     @PersistenceContext val em : EntityManager
@@ -45,7 +45,7 @@ class RaffleServiceTest @Autowired constructor(
     fun beforeEach() {
         em.clear()
         userJpaRepository.deleteAll()
-        raffleJpaRepository.deleteAll()
+        raffleRepository.deleteAll()
         itemJpaRepository.deleteAll()
 
         val userAddress = UserAddress(
@@ -91,7 +91,7 @@ class RaffleServiceTest @Autowired constructor(
             status = RaffleStatus.ACTIVE,
         )
         item.raffleList.add(raffle)
-        raffleJpaRepository.save(raffle)
+        raffleRepository.save(raffle)
 
 //        raffle = fixtureMonkey.giveMeBuilder<Raffle>().set("item",item).set("status",RaffleStatus.ACTIVE).setNull("id").setNull("winner").set("totalCount", 10)
 //            .set("currentCount", 0).sample().let {
@@ -114,7 +114,7 @@ class RaffleServiceTest @Autowired constructor(
         }
 
 
-        val savedRaffle = raffleJpaRepository.findById(raffle.id).get()
+        val savedRaffle = raffleRepository.findById(raffle.id).get()
 
         assertEquals(savedRaffle.currentCount,1)
         assertEquals(savedRaffle.purchaseHistoryList.size,1)

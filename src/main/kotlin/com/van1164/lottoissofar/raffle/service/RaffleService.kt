@@ -7,7 +7,7 @@ import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
 import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryJpaRepository
 import com.van1164.lottoissofar.raffle.exception.RaffleExceptions
-import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
+import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 import org.redisson.api.RLock
 import org.redisson.api.RedissonClient
 import org.springframework.http.ResponseEntity
-import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,7 +24,7 @@ import java.util.concurrent.TimeUnit
 @Service
 @EnableAsync
 class RaffleService(
-    private val raffleRepository: RaffleJpaRepository,
+    private val raffleRepository: RaffleRepository,
     private val userRepository: UserJpaRepository,
     private val itemRepository: ItemJpaRepository,
     private val purchaseHistoryJpaRepository: PurchaseHistoryJpaRepository,
