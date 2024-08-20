@@ -117,7 +117,8 @@ class RaffleService(
             ticketPrice = raffle.ticketPrice,
             currentCount = 0,
             status = RaffleStatus.ACTIVE,
-            item = raffle.item
+            item = raffle.item,
+            isFree = raffle.isFree
         )
 
         raffleRepository.save(newRaffle).run {
