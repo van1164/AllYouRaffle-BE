@@ -2,12 +2,14 @@ package com.van1164.lottoissofar.raffle.service
 
 import com.van1164.lottoissofar.common.discord.DiscordService
 import com.van1164.lottoissofar.common.domain.*
-import com.van1164.lottoissofar.common.email.EmailService
+import com.van1164.lottoissofar.common.dto.sms.SmsMessageDto
+import com.van1164.lottoissofar.email.EmailService
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
 import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryJpaRepository
 import com.van1164.lottoissofar.raffle.exception.RaffleExceptions
 import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
+import com.van1164.lottoissofar.sms.SmsService
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -31,7 +33,8 @@ class RaffleService(
     private val purchaseHistoryJpaRepository: PurchaseHistoryJpaRepository,
     private val redissonClient: RedissonClient,
     private val emailService: EmailService,
-    private val discordService: DiscordService
+    private val discordService: DiscordService,
+    private val smsService: SmsService
 ) {
 
     //    @Transactional
@@ -147,6 +150,23 @@ class RaffleService(
         } catch (e:Exception){
             println("MAIL ERROR")
             println("사용자 ID: "+ winner.userId+"\n raffle ID: "+raffle.id +"| 메일 전송실패")
+            discordService.sendMessage("사용자 ID: "+ winner.userId+"\n raffle ID: "+raffle.id +"| 메일 전송실패")
+        }
+
+        try {
+            val phoneNumber = winner.phoneNumber?: throw RuntimeException()
+            println("전화번호 : $phoneNumber")
+            val smsMessageDto = SmsMessageDto(
+                to = phoneNumber,
+                message = "[올유레플] ${raffle.item.name}에 당첨되었습니다.\n배송 주소변경을 원하시면 금일까지 사이트에서 수정 부탁드립니다."
+            )
+            val response = smsService.sendOne(smsMessageDto)
+            println("ZZZZZZZZZZZZZZZZZZZZZZZZ")
+            println(response)
+        }catch (e:Exception){
+            println("SMS ERROR")
+            println("사용자 ID: "+ winner.userId+"\n raffle ID: "+raffle.id +"| 문자 전송실패")
+            discordService.sendMessage("사용자 ID: "+ winner.userId+"\n사용자 전화번호: ${winner.phoneNumber}\n raffle ID: "+raffle.id +"| 문자 전송실패")
         }
 
 

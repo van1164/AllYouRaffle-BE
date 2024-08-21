@@ -1,4 +1,4 @@
-package com.van1164.lottoissofar.common.email
+package com.van1164.lottoissofar.email
 
 import com.van1164.lottoissofar.common.domain.Raffle
 import com.van1164.lottoissofar.common.domain.User

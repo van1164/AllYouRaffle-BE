@@ -86,6 +86,9 @@ dependencies {
 // https://mvnrepository.com/artifact/com.google.http-client/google-http-client-gson
     implementation("com.google.http-client:google-http-client-gson:1.44.2")
 
+
+    //메시지 API 구현
+    implementation("net.nurigo:sdk:4.3.0")
 }
 
 kotlin {

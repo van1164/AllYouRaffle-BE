@@ -63,7 +63,7 @@ class RaffleControllerTest @Autowired constructor(
         val args = HashMap<String,String>()
         args["RAFFLEID"] = raffle.id.toString()
         for (i : Int in (1..10)){
-            args["JWT$i"] = jwtUtil.generateJwtToken("test$i")
+            args["JWT"] = jwtUtil.generateJwtToken("testMyId")
         }
         val k6 = K6Executor.builder().scriptPath("k6_executor/purchase.js").args(args).build()
         val k6Result = k6.runTest()
@@ -81,35 +81,34 @@ class RaffleControllerTest @Autowired constructor(
         fun beforeAll(@Autowired userJpaRepository: UserJpaRepository, @Autowired jwtUtil: JwtUtil, @Autowired raffleJpaRepository: RaffleJpaRepository): Unit {
             raffleJpaRepository.deleteAll()
             userJpaRepository.deleteAll()
-            for (i in 1..10) {
-                val userAddress = UserAddress(
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    ""
-                )
-                val user = User(
-                    "test$i",
-                    "test",
-                    "test",
-                    "test",
-                    "test",
-                    "test$i",
-                    "",
-                    userAddress,
-                    Role.USER,
-                )
+            val userAddress = UserAddress(
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            )
+            val user = User(
+                "testMyId",
+                "test",
+                "test",
+                "test",
+                "test",
+                "010-2932-1164",
+                "",
+                userAddress,
+                Role.USER,
+            )
 
-                userAddress.user = user
-                userJpaRepository.save(user)
-            }
+            userAddress.user = user
+            userJpaRepository.save(user)
+
         }
     }
 }

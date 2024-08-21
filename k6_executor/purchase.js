@@ -8,8 +8,8 @@ export let options = {
 };
 
 export default function () {
-    let userId = Math.floor(Math.random() * 10)+1;
-    let jwt= __ENV["JWT"+userId.toString()]
+    // let userId = Math.floor(Math.random() * 10)+1;
+    let jwt= __ENV["JWT"]
     let url = `http://localhost:8080/api/v1/raffle/purchase/`+raffleId
     const params = {
         headers: {

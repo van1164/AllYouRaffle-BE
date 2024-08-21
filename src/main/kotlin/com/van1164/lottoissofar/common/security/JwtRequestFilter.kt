@@ -34,10 +34,8 @@ class JwtRequestFilter(
 
         if (username != null && SecurityContextHolder.getContext().authentication == null && jwt !=null) {
             val userDetails = userDetailsService.loadUserByUsername(username) as CustomUserDetails
-            println(userDetails)
             if (jwtUtil.validateToken(jwt, userDetails.loginId)) {
                 val authenticationToken = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
-                println("userDetails : $userDetails")
                 SecurityContextHolder.getContext().authentication = authenticationToken
             }
         }
