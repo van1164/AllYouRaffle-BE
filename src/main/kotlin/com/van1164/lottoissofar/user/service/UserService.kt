@@ -6,14 +6,18 @@ import com.van1164.lottoissofar.common.dto.user.UserAddressRequestDto
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.common.security.JwtUtil
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
+import org.redisson.api.RLock
+import org.redisson.api.RedissonClient
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 @Service
 class UserService(
     private val userRepository: UserJpaRepository,
-    private val jwtUtil: JwtUtil
+    private val jwtUtil: JwtUtil,
+    private val redissonClient: RedissonClient,
 ) {
     @Transactional
     fun registerUserAddress(user: User, userAddress: UserAddressRequestDto) {
@@ -40,6 +44,23 @@ class UserService(
         )
         userRepository.save(user)
         return jwtUtil.generateJwtToken(user.userId)
+    }
+
+    @Transactional
+    fun ticketPlus(user: User, count: Int) {
+        val userLock: RLock = redissonClient.getLock("userLock:${user.userId}")
+        try {
+            if (userLock.tryLock(10, TimeUnit.SECONDS)) {
+                user.tickets += 1
+                userRepository.save(user)
+            } else {
+                throw GlobalExceptions.InternalErrorException("사용자 ID : ${user.userId}|응모권 추가에 실패하였습니다.")
+            }
+        } finally {
+            if (userLock.isHeldByCurrentThread) {
+                userLock.unlock()
+            }
+        }
     }
 
 //    @Transactional

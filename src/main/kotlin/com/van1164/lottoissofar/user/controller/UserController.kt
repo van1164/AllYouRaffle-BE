@@ -31,6 +31,22 @@ class UserController(
         return user
     }
 
+    @GetMapping("/tickets")
+    fun getUserTickets(
+        @Parameter(hidden = true)
+        user: User
+    ): Int {
+        return user.tickets
+    }
+
+    @GetMapping("/tickets/plus_one")
+    fun ticketsPlusOne(
+        @Parameter(hidden = true)
+        user: User
+    ) {
+        userService.ticketPlus(user,1)
+    }
+
     @PostMapping("/set_address")
     fun setAddress(
         @Parameter(hidden = true)
