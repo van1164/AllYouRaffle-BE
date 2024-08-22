@@ -1,33 +1,63 @@
 package com.van1164.lottoissofar.raffle.repository
 
+import com.querydsl.jpa.impl.JPAQueryFactory
+import com.van1164.lottoissofar.common.domain.QRaffle.raffle
 import com.van1164.lottoissofar.common.domain.Raffle
-import org.springframework.data.jpa.repository.Query
+import com.van1164.lottoissofar.common.domain.RaffleStatus.ACTIVE
+import jakarta.persistence.EntityManager
 import org.springframework.data.repository.query.Param
 
-class RaffleRepositoryImpl {
-/*
-    @Query("select r from Raffle r where r.status = 'ACTIVE'")
+class RaffleRepositoryImpl(
+    private val em: EntityManager
+) {
+    private final val query = JPAQueryFactory(em);
+
     fun findAllByStatusIsACTIVE(): List<Raffle> {
+        return query
+            .selectFrom(raffle)
+            .where(raffle.status.eq(ACTIVE))
+            .fetch();
     }
 
-    @Query("select r from Raffle r where r.status = 'ACTIVE' and r.isFree = true")
     fun findAllByStatusIsACTIVEAndFree(): List<Raffle> {
-
+        return query
+            .selectFrom(raffle)
+            .where(
+                raffle.status.eq(ACTIVE),
+                raffle.isFree.eq(true)
+            )
+            .fetch();
     }
 
-    @Query("select r from Raffle r where r.status = 'ACTIVE' and r.isFree = false")
     fun findAllByStatusIsACTIVEAndNotFree(): List<Raffle> {
-
+        return query
+            .selectFrom(raffle)
+            .where(
+                raffle.status.eq(ACTIVE),
+                raffle.isFree.eq(false)
+            )
+            .fetch();
     }
 
-    @Query("select r from Raffle r where r.status = 'ACTIVE' and r.isFree = false and r.id = :raffleId")
-    fun findByStatusIsACTIVEAndNotFree(@Param(value= "raffleId") raffleId : Long): Raffle? {
-
+    fun findByStatusIsACTIVEAndNotFree(@Param(value = "raffleId") raffleId: Long): Raffle? {
+        return query
+            .selectFrom(raffle)
+            .where(
+                raffle.status.eq(ACTIVE),
+                raffle.isFree.eq(false),
+                raffle.id.eq(raffleId)
+            )
+            .fetchOne();
     }
 
-    @Query("select r from Raffle r where r.status = 'ACTIVE' and r.isFree = true and r.id = :raffleId")
-    fun findByStatusIsACTIVEAndFree(@Param(value = "raffleId") raffleId : Long): Raffle? {
-
+    fun findByStatusIsACTIVEAndFree(@Param(value = "raffleId") raffleId: Long): Raffle? {
+        return query
+            .selectFrom(raffle)
+            .where(
+                raffle.status.eq(ACTIVE),
+                raffle.isFree.eq(true),
+                raffle.id.eq(raffleId)
+            )
+            .fetchOne();
     }
- */
 }
