@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.24"
     kotlin("plugin.allopen") version "2.0.0"
     kotlin("kapt") version "1.9.24"
+    idea
 }
 
 group = "com.van1164"
@@ -144,4 +145,12 @@ tasks.test {
 tasks.asciidoctor {
     inputs.dir(project.extra["snippetsDir"]!!)
     dependsOn(tasks.test)
+}
+
+idea {
+    module {
+        val kaptMain = file("build/generated/source/kapt/main")
+        sourceDirs.add(kaptMain)
+        generatedSourceDirs.add(kaptMain)
+    }
 }
