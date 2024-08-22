@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
-interface RaffleJpaRepository : JpaRepository<Raffle,Long> {
+interface RaffleRepository : JpaRepository<Raffle,Long>, RaffleRepositoryCustom{
 
     @Query("select r from Raffle r where r.status = 'ACTIVE'")
     fun findAllByStatusIsACTIVE(): List<Raffle>
