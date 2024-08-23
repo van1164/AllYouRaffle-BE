@@ -2,6 +2,7 @@ package com.van1164.lottoissofar.purchase_history.controller
 
 import com.van1164.lottoissofar.common.domain.PurchaseHistory
 import com.van1164.lottoissofar.common.domain.User
+import com.van1164.lottoissofar.common.dto.purchase_history.PaidRaffleDto
 import com.van1164.lottoissofar.purchase_history.service.PurchaseHistoryService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,5 +17,10 @@ class PurchaseHistoryController(
     @GetMapping("")
     fun getPurchaseHistory(user : User): List<PurchaseHistory> {
         return purchaseHistoryService.getPurchaseList(user)
+    }
+
+    @GetMapping("/some-uri")
+    fun getAll(user: User): List<PaidRaffleDto> {
+        return purchaseHistoryService.getPaidRaffles(user)
     }
 }
