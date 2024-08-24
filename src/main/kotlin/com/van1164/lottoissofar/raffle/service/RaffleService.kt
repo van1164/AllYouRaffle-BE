@@ -14,6 +14,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.redisson.api.RLock
 import org.redisson.api.RedissonClient
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.stereotype.Service
@@ -96,11 +98,10 @@ class RaffleService(
         raffle.completedDate = LocalDateTime.now()
 //        raffleRepository.save(raffle)
         GlobalScope.launch {
-            notifyWinner(raffle,winner)
+            notifyWinner(raffle, winner)
         }
 
         createNewRaffle(raffle)
-
 
 
 //        notifyNewRaffle(raffle.item)
@@ -140,20 +141,20 @@ class RaffleService(
         return newRaffle
     }
 
-    fun notifyWinner(raffle: Raffle, winner : User) {
+    fun notifyWinner(raffle: Raffle, winner: User) {
         try {
-            emailService.sendEmail("Raffle 당첨을 축하드립니다.",raffle,winner)
-        } catch (e:Exception){
+            emailService.sendEmail("Raffle 당첨을 축하드립니다.", raffle, winner)
+        } catch (e: Exception) {
             println("MAIL ERROR")
-            println("사용자 ID: "+ winner.userId+"\n raffle ID: "+raffle.id +"| 메일 전송실패")
+            println("사용자 ID: " + winner.userId + "\n raffle ID: " + raffle.id + "| 메일 전송실패")
         }
 
 
         try {
-            discordService.sendMessage(raffle.id.toString() + "번 래플 당첨자 발생."+"(${raffle.item.name})\n 당첨자 아이디 : ${winner.userId}")
-        } catch (e:Exception){
+            discordService.sendMessage(raffle.id.toString() + "번 래플 당첨자 발생." + "(${raffle.item.name})\n 당첨자 아이디 : ${winner.userId}")
+        } catch (e: Exception) {
             println("DISCORD ERROR")
-            println("사용자 ID: "+ winner.userId+"\n raffle ID: "+raffle.id +"| 디스코드 전송 실패")
+            println("사용자 ID: " + winner.userId + "\n raffle ID: " + raffle.id + "| 디스코드 전송 실패")
         }
 
 
@@ -162,25 +163,25 @@ class RaffleService(
 
     fun notifyNewRaffle(raffle: Raffle) {
         try {
-            discordService.sendMessage(raffle.id.toString() + "번 래플 새로 시작됨."+"(${raffle.item.name})")
-        } catch (e:Exception){
+            discordService.sendMessage(raffle.id.toString() + "번 래플 새로 시작됨." + "(${raffle.item.name})")
+        } catch (e: Exception) {
             println("DISCORD ERROR")
-            println("raffle ID: "+raffle.id +"| 새 래플 시작 디스코드 전송 실패")
+            println("raffle ID: " + raffle.id + "| 새 래플 시작 디스코드 전송 실패")
         }
 
         // 새로운 Raffle 시작 알림 로직 구현
     }
 
-    fun getActive(): List<Raffle> {
-        return raffleRepository.findAllByStatusIsACTIVE()
+    fun getActive(pageable: Pageable): Page<Raffle> {
+        return raffleRepository.findAllByStatusIsACTIVE(pageable)
     }
 
-    fun getActiveFreeRaffle(): List<Raffle> {
-        return raffleRepository.findAllByStatusIsACTIVEAndFree()
+    fun getActiveFreeRaffle(pageable: Pageable): Page<Raffle> {
+        return raffleRepository.findAllByStatusIsACTIVEAndFree(pageable)
     }
 
-    fun getActiveNotFreeRaffle(): List<Raffle> {
-        return raffleRepository.findAllByStatusIsACTIVEAndNotFree()
+    fun getActiveNotFreeRaffle(pageable: Pageable): Page<Raffle> {
+        return raffleRepository.findAllByStatusIsACTIVEAndNotFree(pageable)
     }
 
     fun getAll(): List<Raffle> {
@@ -188,17 +189,17 @@ class RaffleService(
     }
 
     fun getDetailFree(raffleId: Long): ResponseEntity<Raffle> {
-        return raffleRepository.findByStatusIsACTIVEAndFree(raffleId)?.let{
+        return raffleRepository.findByStatusIsACTIVEAndFree(raffleId)?.let {
             ResponseEntity.ok(it)
-        } ?: run{
+        } ?: run {
             throw GlobalExceptions.NotFoundException("이미 마감된 래플입니다.")
         }
     }
 
     fun getDetailNotFree(raffleId: Long): ResponseEntity<Raffle> {
-        return raffleRepository.findByStatusIsACTIVEAndNotFree(raffleId)?.let{
+        return raffleRepository.findByStatusIsACTIVEAndNotFree(raffleId)?.let {
             ResponseEntity.ok(it)
-        } ?: run{
+        } ?: run {
             throw GlobalExceptions.NotFoundException("이미 마감된 래플입니다.")
         }
     }

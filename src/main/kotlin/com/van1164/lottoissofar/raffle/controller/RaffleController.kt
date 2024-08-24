@@ -6,6 +6,9 @@ import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.security.CustomUserDetails
 import com.van1164.lottoissofar.raffle.service.RaffleService
 import io.swagger.v3.oas.annotations.Parameter
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -32,18 +35,24 @@ class RaffleController(
     }
 
     @GetMapping("/active")
-    fun getActive(): List<Raffle> {
-        return raffleService.getActive()
+    fun getActive(
+        @PageableDefault pageable: Pageable
+    ): Page<Raffle> {
+        return raffleService.getActive(pageable)
     }
 
     @GetMapping("/active/not_free")
-    fun getActiveNotFree(): List<Raffle> {
-        return raffleService.getActiveNotFreeRaffle()
+    fun getActiveNotFree(
+        @PageableDefault pageable: Pageable
+    ): Page<Raffle> {
+        return raffleService.getActiveNotFreeRaffle(pageable)
     }
 
     @GetMapping("/active/free")
-    fun getActiveFree(): List<Raffle> {
-        return raffleService.getActiveFreeRaffle()
+    fun getActiveFree(
+        @PageableDefault pageable: Pageable
+    ): Page<Raffle> {
+        return raffleService.getActiveFreeRaffle(pageable)
     }
 
     @GetMapping("/active/not_free/detail/{raffleId}")
