@@ -2,6 +2,8 @@ package com.van1164.lottoissofar.purchase_history.repository
 
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
+import com.van1164.lottoissofar.common.domain.QItem
+import com.van1164.lottoissofar.common.domain.QItem.*
 import com.van1164.lottoissofar.common.domain.QPurchaseHistory
 import com.van1164.lottoissofar.common.domain.QPurchaseHistory.purchaseHistory
 import com.van1164.lottoissofar.common.domain.QRaffle.raffle
@@ -25,6 +27,7 @@ class PurchaseHistoryRepositoryImpl(
             )
             .from(purchaseHistory)
             .innerJoin(purchaseHistory.raffle, raffle)
+            .innerJoin(purchaseHistory.raffle.item, item).fetchJoin()
             .where(purchaseHistory.user.eq(user))
             .groupBy(purchaseHistory.raffle)
             .fetch()
