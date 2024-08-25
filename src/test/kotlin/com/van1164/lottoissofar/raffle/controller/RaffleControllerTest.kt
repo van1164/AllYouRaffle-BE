@@ -102,7 +102,7 @@ class RaffleControllerTest @Autowired constructor(
                 "test",
                 "010-2932-1164",
                 "",
-                0,
+                10,
                 userAddress,
                 Role.USER,
             )

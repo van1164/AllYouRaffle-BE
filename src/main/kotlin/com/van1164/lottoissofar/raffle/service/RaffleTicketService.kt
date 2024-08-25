@@ -92,7 +92,7 @@ class RaffleTicketService(
         raffle.winner = winner
         raffle.status = RaffleStatus.COMPLETED
         raffle.completedDate = LocalDateTime.now()
-//        raffleRepository.save(raffle)
+
         GlobalScope.launch {
             notifyWinner(raffle, winner)
         }
@@ -100,7 +100,6 @@ class RaffleTicketService(
         createNewRaffle(raffle)
 
 
-//        notifyNewRaffle(raffle.item)
     }
 
     @OptIn(DelicateCoroutinesApi::class)
