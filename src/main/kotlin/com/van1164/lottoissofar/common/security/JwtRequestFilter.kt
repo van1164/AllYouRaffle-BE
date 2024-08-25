@@ -1,5 +1,6 @@
 package com.van1164.lottoissofar.common.security
 
+import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -25,19 +26,24 @@ class JwtRequestFilter(
         var username: String? = null
         var jwt: String? = null
 
-
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7)
-            username = jwtUtil.extractUsername(jwt)
-        }
-        if (username != null && SecurityContextHolder.getContext().authentication == null && jwt !=null) {
-            val userDetails = userDetailsService.loadUserByUsername(username) as CustomUserDetails
-            if (jwtUtil.validateToken(jwt, userDetails.loginId)) {
-                val authenticationToken = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
-                SecurityContextHolder.getContext().authentication = authenticationToken
-                println(authenticationToken)
+        try {
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                jwt = authorizationHeader.substring(7)
+                username = jwtUtil.extractUsername(jwt)
             }
+            if (username != null && SecurityContextHolder.getContext().authentication == null && jwt != null) {
+                val userDetails = userDetailsService.loadUserByUsername(username) as CustomUserDetails
+                if (jwtUtil.validateToken(jwt, userDetails.loginId)) {
+                    val authenticationToken =
+                        UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
+                    SecurityContextHolder.getContext().authentication = authenticationToken
+                    println(authenticationToken)
+                }
+            }
+            chain.doFilter(request, response)
+        } catch (e: ExpiredJwtException){
+            response.sendError(401,"JWTEXP")
         }
-        chain.doFilter(request, response)
+
     }
 }

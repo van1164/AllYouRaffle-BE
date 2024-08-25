@@ -2,9 +2,11 @@ package com.van1164.lottoissofar.common.exception
 
 import com.van1164.lottoissofar.common.discord.DiscordService
 import com.van1164.lottoissofar.common.dto.response.ErrorResponse
+import io.jsonwebtoken.ExpiredJwtException
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.validation.BindException
@@ -17,7 +19,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 class GlobalExceptionHandler(
     val discordService: DiscordService
 ){
-
+    @ExceptionHandler(ExpiredJwtException::class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    fun handleJWTException(
+        e: ExpiredJwtException
+    ) : ErrorResponse{
+        return ErrorResponse(
+            message = e.message,
+            description = e.message
+        )
+    }
     @ExceptionHandler(BindException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleNotValidException(
@@ -59,6 +70,9 @@ class GlobalExceptionHandler(
             description = e.message
         )
     }
+
+
+
     @OptIn(DelicateCoroutinesApi::class)
     @ExceptionHandler(RuntimeException::class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
