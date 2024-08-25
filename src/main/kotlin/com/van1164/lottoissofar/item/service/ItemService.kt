@@ -1,6 +1,7 @@
 package com.van1164.lottoissofar.item.service
 
 import com.van1164.lottoissofar.common.domain.Item
+import com.van1164.lottoissofar.common.domain.ItemDescriptionImage
 import com.van1164.lottoissofar.common.domain.Raffle
 import com.van1164.lottoissofar.common.dto.item.CreateItemDto
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
@@ -51,4 +52,15 @@ class ItemService(
     fun findById(id: Long): Item {
         return itemJpaRepository.findById(id).orElseThrow { GlobalExceptions.NotFoundException("Item의 id를 찾을 수 없습니다.") }
     }
+
+    @Transactional
+    fun createDescriptionImage(itemId: Long, image: MultipartFile): ResponseEntity<Any> {
+        val item = findById(itemId)
+        val imageUrl =  s3Component.imageUpload(image)
+        val itemImage = ItemDescriptionImage(imageUrl,item)
+        item.imageList.add(itemImage)
+        return ResponseEntity.ok().body(itemImage)
+    }
+
+
 }

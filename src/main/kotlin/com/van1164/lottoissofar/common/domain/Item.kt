@@ -26,6 +26,9 @@ data class Item(
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", orphanRemoval = true, cascade = [CascadeType.ALL])
-    val raffleList : MutableList<Raffle> = mutableListOf()
+    val raffleList : MutableList<Raffle> = mutableListOf(),
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", orphanRemoval = true, cascade = [CascadeType.ALL])
+    val imageList : MutableList<ItemDescriptionImage> = mutableListOf()
 
 ) : BaseEntity()

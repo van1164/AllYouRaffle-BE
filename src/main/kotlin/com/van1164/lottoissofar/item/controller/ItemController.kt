@@ -25,6 +25,14 @@ class ItemController(
         return itemService.create(createItemDto,image)
     }
 
+    @PostMapping("/create_description_image/{itemId}")
+    fun createDescriptionImage(
+        @RequestPart(required = true) image : MultipartFile,
+        @PathVariable(name = "itemId") itemId : Long
+    ): ResponseEntity<Any> {
+        return itemService.createDescriptionImage(itemId,image)
+    }
+
     @PostMapping("/stop/{id}")
     fun stop(@PathVariable("id") id : Long): ResponseEntity<Any> {
         return itemService.stop(id)
