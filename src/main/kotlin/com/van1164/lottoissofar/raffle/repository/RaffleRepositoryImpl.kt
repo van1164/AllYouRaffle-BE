@@ -1,6 +1,8 @@
 package com.van1164.lottoissofar.raffle.repository
 
 import com.querydsl.jpa.impl.JPAQueryFactory
+import com.van1164.lottoissofar.common.domain.QItem
+import com.van1164.lottoissofar.common.domain.QItem.*
 import com.van1164.lottoissofar.common.domain.QRaffle.raffle
 import com.van1164.lottoissofar.common.domain.Raffle
 import com.van1164.lottoissofar.common.domain.RaffleStatus.ACTIVE
@@ -21,6 +23,7 @@ class RaffleRepositoryImpl(
         val list = query
             .selectFrom(raffle)
             .where(raffle.status.eq(ACTIVE))
+            .innerJoin(raffle.item, item).fetchJoin()
             .orderBy(raffle.createdDate.desc())
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
@@ -44,6 +47,7 @@ class RaffleRepositoryImpl(
                 raffle.status.eq(ACTIVE),
                 raffle.isFree.eq(true)
             )
+            .innerJoin(raffle.item, item).fetchJoin()
             .orderBy(raffle.createdDate.desc())
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
@@ -70,6 +74,7 @@ class RaffleRepositoryImpl(
                 raffle.status.eq(ACTIVE),
                 raffle.isFree.eq(false)
             )
+            .innerJoin(raffle.item, item).fetchJoin()
             .orderBy(raffle.createdDate.desc())
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
@@ -97,6 +102,7 @@ class RaffleRepositoryImpl(
                 raffle.isFree.eq(false),
                 raffle.id.eq(raffleId)
             )
+            .innerJoin(raffle.item, item).fetchJoin()
             .fetchOne();
     }
 
@@ -108,6 +114,7 @@ class RaffleRepositoryImpl(
                 raffle.isFree.eq(true),
                 raffle.id.eq(raffleId)
             )
+            .innerJoin(raffle.item, item).fetchJoin()
             .fetchOne();
     }
 }
