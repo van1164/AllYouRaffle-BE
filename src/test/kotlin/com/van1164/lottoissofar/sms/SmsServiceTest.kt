@@ -1,13 +1,9 @@
 package com.van1164.lottoissofar.sms
 
 import com.van1164.lottoissofar.common.dto.sms.SmsMessageDto
-import org.junit.jupiter.api.Assertions.assertNotEquals
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @SpringBootTest
 class SmsServiceTest @Autowired constructor(

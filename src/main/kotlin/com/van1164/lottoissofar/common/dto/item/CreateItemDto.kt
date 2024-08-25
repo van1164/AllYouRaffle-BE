@@ -2,8 +2,6 @@ package com.van1164.lottoissofar.common.dto.item
 
 import com.van1164.lottoissofar.common.domain.Item
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
-import jakarta.validation.constraints.Size
 import org.hibernate.validator.constraints.Length
 
 

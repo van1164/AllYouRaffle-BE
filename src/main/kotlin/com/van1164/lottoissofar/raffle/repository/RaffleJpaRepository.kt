@@ -7,6 +7,10 @@ import org.springframework.data.repository.query.Param
 
 interface RaffleJpaRepository : JpaRepository<Raffle,Long> {
 
+    @Query("select r from Raffle r where r.status = 'ACTIVE' and r.isFree = true order by r.currentCount desc limit 5")
+    fun findAllByStatusIsACTIVEPopular(): List<Raffle>
+
+
     @Query("select r from Raffle r where r.status = 'ACTIVE'")
     fun findAllByStatusIsACTIVE(): List<Raffle>
 

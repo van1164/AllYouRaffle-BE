@@ -6,7 +6,6 @@ import com.van1164.lottoissofar.common.s3.S3Component
 import com.van1164.lottoissofar.post.repository.PostRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 

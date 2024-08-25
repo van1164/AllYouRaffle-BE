@@ -4,11 +4,10 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.stereotype.Component
-import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.stereotype.Component
+import org.springframework.web.filter.OncePerRequestFilter
 
 
 @Component
@@ -31,12 +30,12 @@ class JwtRequestFilter(
             jwt = authorizationHeader.substring(7)
             username = jwtUtil.extractUsername(jwt)
         }
-
         if (username != null && SecurityContextHolder.getContext().authentication == null && jwt !=null) {
             val userDetails = userDetailsService.loadUserByUsername(username) as CustomUserDetails
             if (jwtUtil.validateToken(jwt, userDetails.loginId)) {
                 val authenticationToken = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
                 SecurityContextHolder.getContext().authentication = authenticationToken
+                println(authenticationToken)
             }
         }
         chain.doFilter(request, response)

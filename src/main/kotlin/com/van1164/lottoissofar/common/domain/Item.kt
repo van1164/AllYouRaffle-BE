@@ -2,7 +2,6 @@ package com.van1164.lottoissofar.common.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
-import java.io.Serializable
 
 @Entity
 @Table(name = "item")

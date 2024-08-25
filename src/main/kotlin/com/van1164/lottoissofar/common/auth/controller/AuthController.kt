@@ -22,8 +22,8 @@ class AuthController(
     @PostMapping("/verify_phone")
     fun verifyPhone(
         @RequestBody phoneNumber : PhoneNumberVerifyDto
-    ): HashMap<String, String> {
-        return hashMapOf("secretKey" to authService.verifyPhoneNumber(phoneNumber.phoneNumber))
+    ): ResponseEntity<Any> {
+        return  authService.verifyPhoneNumber(phoneNumber.phoneNumber)
     }
 
     @GetMapping("/oauth2/success")

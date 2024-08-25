@@ -3,15 +3,11 @@ package com.van1164.lottoissofar.user.service
 import com.van1164.lottoissofar.common.domain.Role
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.domain.UserAddress
-import com.van1164.lottoissofar.common.security.JwtUtil
-import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.stereotype.Service
 import kotlin.test.assertEquals
 
 
