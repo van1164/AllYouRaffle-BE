@@ -9,7 +9,7 @@ import com.van1164.lottoissofar.common.dto.sms.SmsMessageDto
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.email.EmailService
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
-import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryJpaRepository
+import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepository
 import com.van1164.lottoissofar.raffle.exception.RaffleExceptions
 import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
 import com.van1164.lottoissofar.sms.SmsService
@@ -29,7 +29,7 @@ class RaffleTicketService(
     private val raffleRepository: RaffleJpaRepository,
     private val userRepository: UserJpaRepository,
     private val itemRepository: ItemJpaRepository,
-    private val purchaseHistoryJpaRepository: PurchaseHistoryJpaRepository,
+    private val purchaseHistoryRepository: PurchaseHistoryRepository,
     private val redissonClient: RedissonClient,
     private val emailService: EmailService,
     private val discordService: DiscordService,
@@ -80,7 +80,7 @@ class RaffleTicketService(
             val history = PurchaseHistory(user, raffle)
             raffle.purchaseHistoryList.add(history)
             user.purchaseHistoryList.add(history)
-            purchaseHistoryJpaRepository.save(history)
+            purchaseHistoryRepository.save(history)
             historyList.add(history)
         }
         return historyList

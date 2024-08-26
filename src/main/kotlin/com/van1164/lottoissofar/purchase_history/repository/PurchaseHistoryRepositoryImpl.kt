@@ -2,9 +2,7 @@ package com.van1164.lottoissofar.purchase_history.repository
 
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
-import com.van1164.lottoissofar.common.domain.QItem
 import com.van1164.lottoissofar.common.domain.QItem.*
-import com.van1164.lottoissofar.common.domain.QPurchaseHistory
 import com.van1164.lottoissofar.common.domain.QPurchaseHistory.purchaseHistory
 import com.van1164.lottoissofar.common.domain.QRaffle.raffle
 import com.van1164.lottoissofar.common.domain.User
@@ -13,10 +11,10 @@ import jakarta.persistence.EntityManager
 
 class PurchaseHistoryRepositoryImpl(
     private val em: EntityManager
-) {
+) : PurchaseHistoryRepositoryCustom {
     private final val query = JPAQueryFactory(em);
 
-    fun findPaidRaffles(user: User): List<PaidRaffleDto> {
+    override fun findPaidRaffles(user: User): List<PaidRaffleDto> {
         return query
             .select(
                 Projections.constructor(

@@ -64,7 +64,7 @@ class RaffleRepositoryImpl(
 
     override fun findAllByStatusIsACTIVEPopular(): List<Raffle> {
         return query
-            .select(raffle)
+            .selectFrom(raffle)
             .where(
                 raffle.status.eq(ACTIVE),
                 raffle.isFree.eq(true)

@@ -7,7 +7,7 @@ import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.van1164.lottoissofar.common.domain.*
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
-import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryJpaRepository
+import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepository
 import com.van1164.lottoissofar.raffle.exception.RaffleExceptions
 import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
@@ -30,7 +30,7 @@ class RaffleWithTicketTest @Autowired constructor(
     val userJpaRepository: UserJpaRepository,
     val raffleJpaRepository: RaffleJpaRepository,
     val itemJpaRepository: ItemJpaRepository,
-    val purchaseHistoryJpaRepository: PurchaseHistoryJpaRepository,
+    val purchaseHistoryRepository: PurchaseHistoryRepository,
     @PersistenceContext val em : EntityManager
 ) {
     var fixtureMonkey: FixtureMonkey = FixtureMonkey.builder()
