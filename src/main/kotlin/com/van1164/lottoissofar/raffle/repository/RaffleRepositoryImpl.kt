@@ -91,6 +91,21 @@ class RaffleRepositoryImpl(
         return PageableExecutionUtils.getPage(list, pageable, totalSupplier)
     }
 
+//    @Query("select r from Raffle r where r.status = 'ACTIVE' and r.isFree = true order by r.currentCount desc limit 5")
+
+    override fun findAllByStatusIsACTIVEPopular(): List<Raffle> {
+        return query
+            .selectFrom(raffle)
+            .where(
+                raffle.status.eq(ACTIVE),
+                raffle.isFree.eq(true)
+            )
+            .innerJoin(raffle.item, item).fetchJoin()
+            .orderBy(raffle.currentCount.desc())
+            .limit(5)
+            .fetch()
+    }
+
     override fun findByStatusIsACTIVEAndNotFree(@Param(value = "raffleId") raffleId: Long): Raffle? {
         return query
             .selectFrom(raffle)
@@ -113,18 +128,6 @@ class RaffleRepositoryImpl(
             )
             .innerJoin(raffle.item, item).fetchJoin()
             .fetchOne();
-    }
-//    @Query("select r from Raffle r where r.status = 'ACTIVE' and r.isFree = true order by r.currentCount desc limit 5")
-
-    override fun findAllByStatusIsACTIVEPopular(): List<Raffle> {
-        return query
-            .selectFrom(raffle)
-            .where(
-                raffle.status.eq(ACTIVE),
-                raffle.isFree.eq(true)
-            ).orderBy(raffle.currentCount.desc())
-            .limit(5)
-            .fetch()
     }
 
 }
