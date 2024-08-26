@@ -14,6 +14,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.redisson.api.RLock
 import org.redisson.api.RedissonClient
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.stereotype.Service
@@ -210,16 +212,16 @@ class RaffleService(
         // 새로운 Raffle 시작 알림 로직 구현
     }
 
-    fun getActive(): List<Raffle> {
-        return raffleRepository.findAllByStatusIsACTIVE()
+    fun getActive(pageable: Pageable): Page<Raffle> {
+        return raffleRepository.findAllByStatusIsACTIVE(pageable)
     }
 
-    fun getActiveFreeRaffle(): List<Raffle> {
-        return raffleRepository.findAllByStatusIsACTIVEAndFree()
+    fun getActiveFreeRaffle(pageable: Pageable): Page<Raffle> {
+        return raffleRepository.findAllByStatusIsACTIVEAndFree(pageable)
     }
 
-    fun getActiveNotFreeRaffle(): List<Raffle> {
-        return raffleRepository.findAllByStatusIsACTIVEAndNotFree()
+    fun getActiveNotFreeRaffle(pageable: Pageable): Page<Raffle> {
+        return raffleRepository.findAllByStatusIsACTIVEAndNotFree(pageable)
     }
 
     fun getAll(): List<Raffle> {
