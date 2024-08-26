@@ -2,7 +2,6 @@ package com.van1164.lottoissofar.common.domain
 
 import jakarta.persistence.*
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Entity
 @Table(name = "post")

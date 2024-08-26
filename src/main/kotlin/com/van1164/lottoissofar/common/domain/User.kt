@@ -2,6 +2,7 @@ package com.van1164.lottoissofar.common.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
+import org.hibernate.annotations.ColumnDefault
 import kotlin.random.Random
 
 @Entity
@@ -27,6 +28,10 @@ data class User(
 
     @Column(name = "profile_image_url")
     val profileImageUrl: String? = null,
+
+    @Column(name = "tickets", nullable = false)
+    @ColumnDefault("0")
+    var tickets : Int = 0,
 
     @OneToOne(cascade = [CascadeType.ALL])
     var address: UserAddress? = null,

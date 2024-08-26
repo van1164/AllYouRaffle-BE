@@ -1,7 +1,10 @@
 package com.van1164.lottoissofar.common.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.OneToOne
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "user_addresses")

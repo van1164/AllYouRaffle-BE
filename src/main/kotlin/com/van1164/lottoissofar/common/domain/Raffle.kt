@@ -1,10 +1,8 @@
 package com.van1164.lottoissofar.common.domain
 
-import com.amazonaws.services.ec2.model.Purchase
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import java.time.LocalDateTime
-import java.util.*
 
 @Entity
 @Table(name = "raffle")

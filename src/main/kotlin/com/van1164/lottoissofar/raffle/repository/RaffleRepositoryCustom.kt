@@ -15,4 +15,7 @@ interface RaffleRepositoryCustom {
     fun findByStatusIsACTIVEAndNotFree(@Param(value= "raffleId") raffleId : Long): Raffle?
 
     fun findByStatusIsACTIVEAndFree(@Param(value = "raffleId") raffleId : Long): Raffle?
+
+//    @Query("select r from Raffle r where r.status = 'ACTIVE' and r.isFree = true order by r.currentCount desc limit 5")
+    fun findAllByStatusIsACTIVEPopular(): List<Raffle>
 }

@@ -2,7 +2,6 @@ package com.van1164.lottoissofar.common.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
-import java.io.Serializable
 
 @Entity
 @Table(name = "item")
@@ -27,6 +26,9 @@ data class Item(
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", orphanRemoval = true, cascade = [CascadeType.ALL])
-    val raffleList : MutableList<Raffle> = mutableListOf()
+    val raffleList : MutableList<Raffle> = mutableListOf(),
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", orphanRemoval = true, cascade = [CascadeType.ALL])
+    val imageList : MutableList<ItemDescriptionImage> = mutableListOf()
 
 ) : BaseEntity()

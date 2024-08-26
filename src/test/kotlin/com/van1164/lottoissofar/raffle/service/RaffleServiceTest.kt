@@ -69,6 +69,7 @@ class RaffleServiceTest @Autowired constructor(
             "test",
             "test",
             "",
+            0,
             userAddress,
             Role.USER
         )

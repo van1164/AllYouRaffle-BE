@@ -16,11 +16,11 @@ import java.util.function.LongSupplier
 
 class RaffleRepositoryImpl(
     private val em: EntityManager
-) {
+) :RaffleRepositoryCustom {
     private final val query = JPAQueryFactory(em);
 
-    fun findAllByStatusIsACTIVE(pageable: Pageable): Page<Raffle> {
-        val list = query
+    override fun findAllByStatusIsACTIVE(): List<Raffle> {
+        return query
             .selectFrom(raffle)
             .where(raffle.status.eq(ACTIVE))
             .innerJoin(raffle.item, item).fetchJoin()
@@ -40,8 +40,9 @@ class RaffleRepositoryImpl(
         return PageableExecutionUtils.getPage(list, pageable, totalSupplier)
     }
 
-    fun findAllByStatusIsACTIVEAndFree(pageable: Pageable): Page<Raffle> {
-        val list = query
+    override fun findAllByStatusIsACTIVEAndFree(): List<Raffle> {
+        return query
+
             .selectFrom(raffle)
             .where(
                 raffle.status.eq(ACTIVE),
@@ -67,8 +68,8 @@ class RaffleRepositoryImpl(
         return PageableExecutionUtils.getPage(list, pageable, totalSupplier)
     }
 
-    fun findAllByStatusIsACTIVEAndNotFree(pageable: Pageable): Page<Raffle> {
-        val list = query
+    override fun findAllByStatusIsACTIVEAndNotFree(): List<Raffle> {
+        return query
             .selectFrom(raffle)
             .where(
                 raffle.status.eq(ACTIVE),
@@ -94,7 +95,7 @@ class RaffleRepositoryImpl(
         return PageableExecutionUtils.getPage(list, pageable, totalSupplier)
     }
 
-    fun findByStatusIsACTIVEAndNotFree(@Param(value = "raffleId") raffleId: Long): Raffle? {
+    override fun findByStatusIsACTIVEAndNotFree(@Param(value = "raffleId") raffleId: Long): Raffle? {
         return query
             .selectFrom(raffle)
             .where(
@@ -106,7 +107,7 @@ class RaffleRepositoryImpl(
             .fetchOne();
     }
 
-    fun findByStatusIsACTIVEAndFree(@Param(value = "raffleId") raffleId: Long): Raffle? {
+    override fun findByStatusIsACTIVEAndFree(@Param(value = "raffleId") raffleId: Long): Raffle? {
         return query
             .selectFrom(raffle)
             .where(
@@ -117,4 +118,17 @@ class RaffleRepositoryImpl(
             .innerJoin(raffle.item, item).fetchJoin()
             .fetchOne();
     }
+//    @Query("select r from Raffle r where r.status = 'ACTIVE' and r.isFree = true order by r.currentCount desc limit 5")
+
+    override fun findAllByStatusIsACTIVEPopular(): List<Raffle> {
+        return query
+            .selectFrom(raffle)
+            .where(
+                raffle.status.eq(ACTIVE),
+                raffle.isFree.eq(true)
+            ).orderBy(raffle.currentCount.desc())
+            .limit(5)
+            .fetch()
+    }
+
 }

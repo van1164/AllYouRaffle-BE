@@ -2,7 +2,6 @@ package com.van1164.lottoissofar.common.security
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import java.io.Serializable
 
 
 data class CustomUserDetails(

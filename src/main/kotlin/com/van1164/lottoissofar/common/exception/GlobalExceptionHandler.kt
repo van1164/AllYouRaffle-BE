@@ -1,19 +1,34 @@
 package com.van1164.lottoissofar.common.exception
 
+import com.van1164.lottoissofar.common.discord.DiscordService
 import com.van1164.lottoissofar.common.dto.response.ErrorResponse
+import io.jsonwebtoken.ExpiredJwtException
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.validation.BindException
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 
 @RestControllerAdvice
-class GlobalExceptionHandler{
-
+class GlobalExceptionHandler(
+    val discordService: DiscordService
+){
+    @ExceptionHandler(ExpiredJwtException::class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    fun handleJWTException(
+        e: ExpiredJwtException
+    ) : ErrorResponse{
+        return ErrorResponse(
+            message = e.message,
+            description = e.message
+        )
+    }
     @ExceptionHandler(BindException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleNotValidException(
@@ -34,7 +49,7 @@ class GlobalExceptionHandler{
         return result
     }
 
-    @ExceptionHandler(GlobalExceptions.GlobalException::class)
+    @ExceptionHandler(GlobalExceptions.NotFoundException::class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun handleDefaultException(
         e: GlobalExceptions.NotFoundException
@@ -44,4 +59,38 @@ class GlobalExceptionHandler{
             description = e.message
         )
     }
+
+    @ExceptionHandler(GlobalExceptions.InternalErrorException::class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    fun handleInternalException(
+        e: GlobalExceptions.InternalErrorException
+    ) : ErrorResponse{
+        return ErrorResponse(
+            message = e.message,
+            description = e.message
+        )
+    }
+
+
+
+    @OptIn(DelicateCoroutinesApi::class)
+    @ExceptionHandler(RuntimeException::class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    fun handleRuntimeException(
+        e: RuntimeException
+    ) : ErrorResponse{
+        GlobalScope.launch {
+            var userId : String? =null
+            try {
+                userId = SecurityContextHolder.getContext().authentication.name
+            }catch (e:Exception){}
+
+            discordService.sendMessage("사용자 userId:$userId\n예상치 못한 에러 발생\n메시지:${e.message}\n원인:${e.cause}")
+        }
+        return ErrorResponse(
+            message = e.message,
+            description = e.message
+        )
+    }
+
 }

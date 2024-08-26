@@ -4,7 +4,6 @@ import com.van1164.lottoissofar.common.domain.Item
 import com.van1164.lottoissofar.common.domain.Raffle
 import com.van1164.lottoissofar.common.domain.RaffleStatus
 import com.van1164.lottoissofar.common.domain.User
-import com.van1164.lottoissofar.common.email.EmailService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
