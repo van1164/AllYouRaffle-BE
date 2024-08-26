@@ -4,10 +4,10 @@ import com.van1164.lottoissofar.common.discord.DiscordService
 import com.van1164.lottoissofar.common.domain.*
 import com.van1164.lottoissofar.common.dto.sms.SmsMessageDto
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
+import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepository
 import com.van1164.lottoissofar.email.EmailService
-import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryJpaRepository
 import com.van1164.lottoissofar.raffle.exception.RaffleExceptions
-import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
+import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import com.van1164.lottoissofar.sms.SmsService
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit
 @Service
 @EnableAsync
 class RaffleService(
-    private val raffleRepository: RaffleJpaRepository,
-    private val purchaseHistoryJpaRepository: PurchaseHistoryJpaRepository,
+    private val raffleRepository: RaffleRepository,
+    private val purchaseHistoryRepository: PurchaseHistoryRepository,
     private val redissonClient: RedissonClient,
     private val emailService: EmailService,
     private val discordService: DiscordService,
@@ -107,7 +107,7 @@ class RaffleService(
         val history = PurchaseHistory(user, raffle)
         raffle.purchaseHistoryList.add(history)
         user.purchaseHistoryList.add(history)
-        purchaseHistoryJpaRepository.save(history)
+        purchaseHistoryRepository.save(history)
         return history
     }
 

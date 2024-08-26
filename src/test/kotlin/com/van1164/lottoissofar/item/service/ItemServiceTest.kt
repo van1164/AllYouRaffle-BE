@@ -11,10 +11,12 @@ import com.van1164.lottoissofar.common.domain.RaffleStatus
 import com.van1164.lottoissofar.common.dto.item.CreateItemDto
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
-import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
+import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -30,7 +32,7 @@ class ItemServiceTest @Autowired constructor(
     val itemJpaRepository: ItemJpaRepository,
     @MockBean val s3Component: AmazonS3Client,
     @PersistenceContext val em : EntityManager,
-    val raffleJpaRepository: RaffleJpaRepository
+    val raffleRepository: RaffleRepository
 ) {
     var fixtureMonkey: FixtureMonkey = FixtureMonkey.builder()
         .plugin(KotlinPlugin())
@@ -132,7 +134,7 @@ class ItemServiceTest @Autowired constructor(
         assertTrue(startedItem.get().possibleRaffle)
 
 
-        val startedRaffle = raffleJpaRepository.findById(raffle.id)
+        val startedRaffle = raffleRepository.findById(raffle.id)
 
         assertTrue(startedRaffle.isPresent)
         assertEquals(startedRaffle.get().status,RaffleStatus.ACTIVE)

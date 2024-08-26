@@ -7,8 +7,8 @@ import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.van1164.lottoissofar.common.domain.*
 import com.van1164.lottoissofar.common.security.JwtUtil
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
-import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryJpaRepository
-import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
+import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepository
+import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import io.github.van1164.K6Executor
 import jakarta.transaction.Transactional
@@ -24,9 +24,9 @@ import org.springframework.test.annotation.Rollback
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class RaffleControllerTest @Autowired constructor(
     val userJpaRepository: UserJpaRepository,
-    val raffleJpaRepository: RaffleJpaRepository,
+    val raffleRepository: RaffleRepository,
     val itemJpaRepository: ItemJpaRepository,
-    val purchaseHistoryJpaRepository: PurchaseHistoryJpaRepository,
+    val purchaseHistoryRepository: PurchaseHistoryRepository,
     val jwtUtil: JwtUtil
 ) {
 
@@ -41,8 +41,8 @@ class RaffleControllerTest @Autowired constructor(
     @Transactional
     @Rollback
     fun beforeEach() {
-        purchaseHistoryJpaRepository.deleteAll()
-        raffleJpaRepository.deleteAll()
+        purchaseHistoryRepository.deleteAll()
+        raffleRepository.deleteAll()
         itemJpaRepository.deleteAll()
 
         val item = fixtureMonkey.giveMeBuilder<Item>().setNull("id").set("raffleList", mutableListOf<Raffle>()).set("defaultTotalCount", 10).set("possibleRaffle",true).sample()
@@ -52,7 +52,7 @@ class RaffleControllerTest @Autowired constructor(
             status = RaffleStatus.ACTIVE,
         )
         item.raffleList.add(insertRaffle)
-        raffle = raffleJpaRepository.save(insertRaffle)
+        raffle = raffleRepository.save(insertRaffle)
     }
 
 
@@ -70,7 +70,7 @@ class RaffleControllerTest @Autowired constructor(
         k6Result.printResult()
 //        println(k6Result.totalRequest)
 //        assertEquals(k6Result.successRequest,5)
-        val purchaseHistoryCount = purchaseHistoryJpaRepository.count()
+        val purchaseHistoryCount = purchaseHistoryRepository.count()
         assertEquals(purchaseHistoryCount,5)
     }
 
@@ -78,8 +78,8 @@ class RaffleControllerTest @Autowired constructor(
 
         @JvmStatic
         @BeforeAll
-        fun beforeAll(@Autowired userJpaRepository: UserJpaRepository, @Autowired jwtUtil: JwtUtil, @Autowired raffleJpaRepository: RaffleJpaRepository): Unit {
-            raffleJpaRepository.deleteAll()
+        fun beforeAll(@Autowired userJpaRepository: UserJpaRepository, @Autowired jwtUtil: JwtUtil, @Autowired raffleRepository: RaffleRepository): Unit {
+            raffleRepository.deleteAll()
             userJpaRepository.deleteAll()
             val userAddress = UserAddress(
                 "",
