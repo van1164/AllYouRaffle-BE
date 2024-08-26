@@ -1,26 +1,23 @@
 package com.van1164.lottoissofar.raffle.repository
 
 import com.querydsl.jpa.impl.JPAQueryFactory
-import com.van1164.lottoissofar.common.domain.QItem
-import com.van1164.lottoissofar.common.domain.QItem.*
+import com.van1164.lottoissofar.common.domain.QItem.item
 import com.van1164.lottoissofar.common.domain.QRaffle.raffle
 import com.van1164.lottoissofar.common.domain.Raffle
 import com.van1164.lottoissofar.common.domain.RaffleStatus.ACTIVE
 import jakarta.persistence.EntityManager
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.support.PageableUtils
 import org.springframework.data.repository.query.Param
 import org.springframework.data.support.PageableExecutionUtils
-import java.util.function.LongSupplier
 
 class RaffleRepositoryImpl(
-    private val em: EntityManager
+    em: EntityManager
 ) :RaffleRepositoryCustom {
-    private final val query = JPAQueryFactory(em);
+    private val query = JPAQueryFactory(em);
 
-    override fun findAllByStatusIsACTIVE(): List<Raffle> {
-        return query
+    override fun findAllByStatusIsACTIVE(pageable: Pageable): Page<Raffle> {
+        val list = query
             .selectFrom(raffle)
             .where(raffle.status.eq(ACTIVE))
             .innerJoin(raffle.item, item).fetchJoin()
@@ -40,9 +37,8 @@ class RaffleRepositoryImpl(
         return PageableExecutionUtils.getPage(list, pageable, totalSupplier)
     }
 
-    override fun findAllByStatusIsACTIVEAndFree(): List<Raffle> {
-        return query
-
+    override fun findAllByStatusIsACTIVEAndFree(pageable: Pageable): Page<Raffle> {
+        val list = query
             .selectFrom(raffle)
             .where(
                 raffle.status.eq(ACTIVE),
@@ -68,8 +64,8 @@ class RaffleRepositoryImpl(
         return PageableExecutionUtils.getPage(list, pageable, totalSupplier)
     }
 
-    override fun findAllByStatusIsACTIVEAndNotFree(): List<Raffle> {
-        return query
+    override fun findAllByStatusIsACTIVEAndNotFree(pageable: Pageable): Page<Raffle> {
+        val list = query
             .selectFrom(raffle)
             .where(
                 raffle.status.eq(ACTIVE),

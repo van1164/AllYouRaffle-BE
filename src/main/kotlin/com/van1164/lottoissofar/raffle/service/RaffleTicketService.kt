@@ -11,7 +11,7 @@ import com.van1164.lottoissofar.email.EmailService
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
 import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepository
 import com.van1164.lottoissofar.raffle.exception.RaffleExceptions
-import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
+import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import com.van1164.lottoissofar.sms.SmsService
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -26,7 +26,7 @@ import java.time.LocalDateTime
 
 @Service
 class RaffleTicketService(
-    private val raffleRepository: RaffleJpaRepository,
+    private val raffleRepository: RaffleRepository,
     private val userRepository: UserJpaRepository,
     private val itemRepository: ItemJpaRepository,
     private val purchaseHistoryRepository: PurchaseHistoryRepository,
