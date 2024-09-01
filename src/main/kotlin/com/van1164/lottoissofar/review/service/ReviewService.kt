@@ -17,11 +17,11 @@ class ReviewService (
         return reviewRepository.save(createReviewDto.toDomain(user))
     }
 
-    fun getAll(pageable: Pageable): Page<ReadReviewDto>{
-        return reviewRepository.findAllPaged(pageable)
+    fun getAll(cursor: Long, pageable: Pageable): Page<ReadReviewDto>{
+        return reviewRepository.findAllPaged(cursor, pageable)
     }
 
-    fun getAllWithUser(user: User, pageable: Pageable): Page<ReadReviewDto> {
-        return reviewRepository.findAllPagedWithUser(user, pageable)
+    fun getAllWithUser(user: User, cursor: Long, pageable: Pageable): Page<ReadReviewDto> {
+        return reviewRepository.findAllPagedWithUser(user, cursor, pageable)
     }
 }

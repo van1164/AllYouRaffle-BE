@@ -18,7 +18,7 @@ class ReviewRepositoryImpl (
 ) {
     private final val query = JPAQueryFactory(em)
 
-    fun findAllPaged(pageable: Pageable): Page<ReadReviewDto> {
+    fun findAllPaged(cursor: Long, pageable: Pageable): Page<ReadReviewDto> {
         val list = query
             .select(
                 Projections
@@ -28,8 +28,8 @@ class ReviewRepositoryImpl (
                     )
             )
             .from(review)
-            .orderBy(review.createdDate.desc())
-            .offset(pageable.offset)
+            .where(review.id.loe(cursor))
+            .orderBy(review.id.desc())
             .limit(pageable.pageSize.toLong())
             .fetch()
 
@@ -43,7 +43,7 @@ class ReviewRepositoryImpl (
         return PageableExecutionUtils.getPage(list, pageable, countQuery)
     }
 
-    fun findAllPagedWithUser(user: User, pageable: Pageable): Page<ReadReviewDto> {
+    fun findAllPagedWithUser(user: User, cursor: Long, pageable: Pageable): Page<ReadReviewDto> {
         val list = query
             .select(
                 Projections
@@ -53,9 +53,11 @@ class ReviewRepositoryImpl (
                     )
             )
             .from(review)
-            .where(review.user.id.eq(user.id))
-            .orderBy(review.createdDate.desc())
-            .offset(pageable.offset)
+            .where(
+                review.user.id.eq(user.id),
+                review.id.loe(cursor)
+            )
+            .orderBy(review.id.desc())
             .limit(pageable.pageSize.toLong())
             .fetch()
 

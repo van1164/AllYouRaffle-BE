@@ -6,6 +6,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 interface ReviewRepositoryCustom {
-    fun findAllPaged(pageable: Pageable): Page<ReadReviewDto>
-    fun findAllPagedWithUser(user: User, pageable: Pageable): Page<ReadReviewDto>
+    fun findAllPaged(cursor: Long, pageable: Pageable): Page<ReadReviewDto>
+    fun findAllPagedWithUser(user: User, cursor: Long, pageable: Pageable): Page<ReadReviewDto>
 }

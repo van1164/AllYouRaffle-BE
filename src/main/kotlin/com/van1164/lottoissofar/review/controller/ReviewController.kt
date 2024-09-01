@@ -19,15 +19,15 @@ class ReviewController (
     private val reviewService: ReviewService
 ){
     @GetMapping("review")
-    fun getAll(pageable: Pageable) : Page<ReadReviewDto> {
-        return reviewService.getAll(pageable)
+    fun getAll(cursor: Long, pageable: Pageable) : Page<ReadReviewDto> {
+        return reviewService.getAll(cursor, pageable)
     }
 
     @GetMapping("user/review")
     fun getAllWithUser(
-        @Parameter(hidden = true) user: User, pageable: Pageable
+        @Parameter(hidden = true) user: User, cursor:Long, pageable: Pageable
     ) : Page<ReadReviewDto> {
-        return reviewService.getAllWithUser(user, pageable)
+        return reviewService.getAllWithUser(user, cursor, pageable)
     }
 
     //FIXME: swagger 반환 값 정상 응답인지 확인 필요
