@@ -1,8 +1,6 @@
 package com.van1164.lottoissofar.common.security
 
 import com.van1164.lottoissofar.common.domain.User
-import com.van1164.lottoissofar.common.exception.GlobalExceptions
-import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import com.van1164.lottoissofar.user.service.UserService
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails

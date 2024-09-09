@@ -1,8 +1,6 @@
 package com.van1164.lottoissofar.common.dto.user
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.van1164.lottoissofar.common.domain.UserAddress
-import jakarta.persistence.Column
 
 data class UserAddressRequestDto(
     val address: String, // 주소

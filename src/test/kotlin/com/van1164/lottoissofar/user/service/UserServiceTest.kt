@@ -1,13 +1,10 @@
 package com.van1164.lottoissofar.user.service
 
-import com.van1164.lottoissofar.common.domain.Role
 import com.van1164.lottoissofar.common.domain.User
-import com.van1164.lottoissofar.common.domain.UserAddress
 import com.van1164.lottoissofar.common.dto.user.PhoneNumberRequestDto
 import com.van1164.lottoissofar.common.dto.user.UserAddressRequestDto
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

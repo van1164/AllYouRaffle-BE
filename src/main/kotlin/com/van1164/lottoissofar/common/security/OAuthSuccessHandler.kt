@@ -31,23 +31,14 @@ class OAuthSuccessHandler(
     ) {
         val user = authentication.principal as CustomOAuth2User
         val userId = user.userId
-        println(userId)
         val accessToken: String = jwtUtil.generateJwtToken(
             username = userId
         )
-
-//        val cookie: ResponseCookie = ResponseCookie.from(JWTUtil.REFRESH_TOKEN, refreshToken)
-//            .httpOnly(true)
-//            .secure(true)
-//            .path("/") // path
-//            .maxAge(Duration.ofDays(15))
-//            .sameSite("None") // sameSite
-//            .build()
-//        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString())
+        val refreshToken :String = jwtUtil.generateRefreshToken(username = userId)
 
         response.sendRedirect(
             corsFrontend +
-                    "?access_token=" + accessToken
+                    "?access_token=" + accessToken +"&refresh_token="+refreshToken
         )
     }
 

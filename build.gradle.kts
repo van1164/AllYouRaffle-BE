@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("org.springframework.boot") version "3.3.1"
     id("io.spring.dependency-management") version "1.1.5"
@@ -98,6 +101,9 @@ dependencies {
 // https://mvnrepository.com/artifact/com.google.http-client/google-http-client-gson
     implementation("com.google.http-client:google-http-client-gson:1.44.2")
 
+
+    //메시지 API 구현
+    implementation("net.nurigo:sdk:4.3.0")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     //Querydsl
@@ -116,6 +122,7 @@ tasks.withType<JavaCompile> {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
