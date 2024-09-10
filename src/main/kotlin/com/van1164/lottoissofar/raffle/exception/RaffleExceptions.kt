@@ -1,13 +1,16 @@
 package com.van1164.lottoissofar.raffle.exception
 
+import com.van1164.lottoissofar.common.exception.ErrorCode
+import com.van1164.lottoissofar.common.exception.ErrorCode.*
+
 class RaffleExceptions {
-    open class RaffleException(message : String) : RuntimeException()
+    open class RaffleException(errorCode: ErrorCode) : RuntimeException()
 
-    class AlreadyFinishedException(message : String) : RaffleException(message)
+    class AlreadyFinishedException(errorCode: ErrorCode) : RaffleException(errorCode)
 
-    class ExceedTickets(message : String = "보유한 티켓이 부족합니다.") : RaffleException(message)
+    class ExceedTickets(errorCode: ErrorCode = RAFFLE_INSUFFICIENT_TICKETS) : RaffleException(errorCode)
 
-    class TotalTicketExceed(message: String = "이 래플의 구매가능 횟수를 초과했습니다.") : RaffleException(message)
+    class TotalTicketExceed(errorCode: ErrorCode = RAFFLE_PURCHASE_LIMIT_EXCEEDED) : RaffleException(errorCode)
 
-    class AlreadyPurchasedException(message: String) : RaffleException(message)
+    class AlreadyPurchasedException(errorCode: ErrorCode) : RaffleException(errorCode)
 }

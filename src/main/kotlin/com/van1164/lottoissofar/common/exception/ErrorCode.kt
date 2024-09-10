@@ -1,0 +1,20 @@
+package com.van1164.lottoissofar.common.exception
+
+import org.springframework.http.HttpStatus
+
+enum class ErrorCode (val status:Int, val code:String, val message:String) {
+    // Common
+    BAD_REQUEST(400, "C001", "요청 파라미터 혹은 요청 바디의 값을 다시 확인하세요."),
+    INTERNAL_SERVER_ERROR(500, "C002", "Internal Server Error"),
+    INVALID_INPUT_VALUE(400, "C003", "유효하지 않은 입력입니다."),
+    NOT_FOUND(404, "C004", "Not Found"),
+    DATETIME_INVALID(400, "C005", "유효하지 않은 날짜입니다"),
+
+    // raffle
+    RAFFLE_NOT_FOUND(404, "R001", "Raffle을 찾을 수 없습니다."),
+    RAFFLE_ALREADY_INACTIVE(409, "R002", "이미 완료된 Raffle입니다. 새로운 Raffle에 참가해주세요."),
+    RAFFLE_MAX_CAPACITY_REACHED(409, "R003", "필요한 인원이 모두 채워져 Raffle 참여가 마감되었습니다. 새로운 Raffle에 참가해주세요."),
+    RAFFLE_PURCHASE_LOCK_TIMEOUT(408, "R004", "Raffle 결제 과정에서 시간 초과가 발생했습니다."),
+    RAFFLE_INSUFFICIENT_TICKETS(410, "R005", "보유 티켓이 부족합니다."),
+    RAFFLE_PURCHASE_LIMIT_EXCEEDED(409, "R006", "이 래플의 구매가능 횟수를 초과했습니다.")
+}
