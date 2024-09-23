@@ -3,6 +3,8 @@ package com.van1164.lottoissofar.user.service
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.dto.user.PhoneNumberRequestDto
 import com.van1164.lottoissofar.common.dto.user.UserAddressRequestDto
+import com.van1164.lottoissofar.common.exception.ErrorCode.NOT_FOUND
+import com.van1164.lottoissofar.common.exception.ErrorCode.USER_TICKET_LOCK_TIMEOUT
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.common.security.JwtUtil
 import com.van1164.lottoissofar.user.exception.AlreadySavedPhoneNumber
@@ -36,7 +38,7 @@ class UserService(
 
     fun findByUserId(userId: String): User {
         return userRepository.findUserByUserId(userId)
-            ?: run { throw GlobalExceptions.NotFoundException("not found loginId : $userId") };
+            ?: run { throw GlobalExceptions.NotFoundException(NOT_FOUND.setMessageWith(userId)) };
     }
 
     @Transactional
@@ -59,7 +61,7 @@ class UserService(
                 userRepository.save(user)
                 return user.tickets
             } else {
-                throw GlobalExceptions.InternalErrorException("사용자 ID : ${user.userId}|응모권 추가에 실패하였습니다.")
+                throw GlobalExceptions.InternalErrorException(USER_TICKET_LOCK_TIMEOUT.setMessageWith(user.userId))
             }
         } finally {
             if (userLock.isHeldByCurrentThread) {
