@@ -3,6 +3,8 @@ package com.van1164.lottoissofar.raffle.service
 import com.van1164.lottoissofar.common.discord.DiscordService
 import com.van1164.lottoissofar.common.domain.*
 import com.van1164.lottoissofar.common.dto.sms.SmsMessageDto
+import com.van1164.lottoissofar.common.exception.ErrorCode
+import com.van1164.lottoissofar.common.exception.ErrorCode.*
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepository
 import com.van1164.lottoissofar.email.EmailService
@@ -42,7 +44,7 @@ class RaffleService(
             if (raffleLock.tryLock(10, TimeUnit.SECONDS)) {
                 return purchase(raffleId, user)
             } else {
-                throw GlobalExceptions.InternalErrorException("Raffle 결제 과정에서 시간초과가 발생했습니다.")
+                throw GlobalExceptions.InternalErrorException(RAFFLE_PURCHASE_LOCK_TIMEOUT)
             }
         } finally {
             if (raffleLock.isHeldByCurrentThread) {
@@ -57,19 +59,9 @@ class RaffleService(
         user: User
     ): ResponseEntity<PurchaseHistory> {
         val raffle = raffleRepository.findById(raffleId)
-            .orElseThrow { GlobalExceptions.NotFoundException("Raffle을 찾을 수 없습니다.") }
-
-        if (raffle.status != RaffleStatus.ACTIVE) {
-            throw RaffleExceptions.AlreadyFinishedException("이미 완료된 Raffle입니다. 새로운 Raffle에 참가해주세요.")
-        }
-
-        if (raffle.currentCount >= raffle.totalCount) {
-            throw RaffleExceptions.AlreadyFinishedException("이미 완료된 Raffle입니다. 새로운 Raffle에 참가해주세요.")
-        }
-
-//        if (purchaseHistoryJpaRepository.existsDistinctByUserAndRaffle(user, raffle)) {
-//            throw RaffleExceptions.AlreadyPurchasedException("이미 구매한 Raffle입니다.")
-//        }
+            .orElseThrow { GlobalExceptions.NotFoundException(RAFFLE_NOT_FOUND.setMessageWith(raffleId)) }
+        validateRaffleStatus(raffle, RAFFLE_ALREADY_INACTIVE)
+        validateTicketCount(raffle, RAFFLE_MAX_CAPACITY_REACHED)
 
         raffle.currentCount += 1
         val history = createPurchaseHistory(raffle, user)
@@ -77,14 +69,23 @@ class RaffleService(
         if (raffle.currentCount == raffle.totalCount) {
             completeRaffle(raffle)
         }
+
         return ResponseEntity.ok().body(history)
     }
 
 
-    fun purchaseRaffleOneTicket(raffleId: Long,userId: Long): ResponseEntity<MutableList<PurchaseHistory>> {
-        return purchaseRaffleWithTicket(raffleId,1,userId)
+    fun purchaseRaffleOneTicket(
+        raffleId: Long,
+        userId: Long
+    ): ResponseEntity<MutableList<PurchaseHistory>> {
+        return purchaseRaffleWithTicket(raffleId, 1, userId)
     }
-    fun purchaseRaffleWithTicket(raffleId: Long, ticketCount: Int, userId : Long): ResponseEntity<MutableList<PurchaseHistory>> {
+
+    fun purchaseRaffleWithTicket(
+        raffleId: Long,
+        ticketCount: Int,
+        userId: Long
+    ): ResponseEntity<MutableList<PurchaseHistory>> {
         val raffleLock: RLock = redissonClient.getLock("raffleLock:$raffleId")
         val userLock: RLock = redissonClient.getLock("userLock:${userId}")
         try {
@@ -93,13 +94,13 @@ class RaffleService(
             if (locked) {
                 return raffleTicketService.purchaseWithTicket(raffleId, ticketCount, userId)
             } else {
-                throw GlobalExceptions.InternalErrorException("Raffle 결제 과정에서 시간초과가 발생했습니다.")
+                throw GlobalExceptions.InternalErrorException(RAFFLE_PURCHASE_LOCK_TIMEOUT)
             }
         } finally {
             if (raffleLock.isHeldByCurrentThread) {
                 raffleLock.unlock()
             }
-            if (userLock.isHeldByCurrentThread){
+            if (userLock.isHeldByCurrentThread) {
                 userLock.unlock()
             }
         }
@@ -125,7 +126,6 @@ class RaffleService(
         }
 
         createNewRaffle(raffle)
-
 
 //        notifyNewRaffle(raffle.item)
     }
@@ -232,7 +232,7 @@ class RaffleService(
         return raffleRepository.findByStatusIsACTIVEAndFree(raffleId)?.let {
             ResponseEntity.ok(it)
         } ?: run {
-            throw GlobalExceptions.NotFoundException("이미 마감된 래플입니다.")
+            throw GlobalExceptions.NotFoundException(RAFFLE_ALREADY_INACTIVE)
         }
     }
 
@@ -240,11 +240,25 @@ class RaffleService(
         return raffleRepository.findByStatusIsACTIVEAndNotFree(raffleId)?.let {
             ResponseEntity.ok(it)
         } ?: run {
-            throw GlobalExceptions.NotFoundException("이미 마감된 래플입니다.")
+            throw GlobalExceptions.NotFoundException(RAFFLE_ALREADY_INACTIVE)
         }
     }
 
     fun getActivePopular(): List<Raffle> {
         return raffleRepository.findAllByStatusIsACTIVEPopular()
+    }
+
+    @Suppress("SameParameterValue")
+    private fun validateRaffleStatus(raffle: Raffle, errorCode: ErrorCode) {
+        if (raffle.status == RaffleStatus.INACTIVE) {
+            throw RaffleExceptions.AlreadyFinishedException(errorCode)
+        }
+    }
+
+    @Suppress("SameParameterValue")
+    private fun validateTicketCount(raffle: Raffle, errorCode: ErrorCode) {
+        if (raffle.currentCount >= raffle.totalCount) {
+            throw RaffleExceptions.AlreadyFinishedException(errorCode)
+        }
     }
 }

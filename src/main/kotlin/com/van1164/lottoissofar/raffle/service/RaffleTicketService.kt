@@ -6,6 +6,8 @@ import com.van1164.lottoissofar.common.domain.Raffle
 import com.van1164.lottoissofar.common.domain.RaffleStatus
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.dto.sms.SmsMessageDto
+import com.van1164.lottoissofar.common.exception.ErrorCode
+import com.van1164.lottoissofar.common.exception.ErrorCode.*
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.email.EmailService
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
@@ -41,20 +43,22 @@ class RaffleTicketService(
         ticketCount: Int,
         userId: Long
     ): ResponseEntity<MutableList<PurchaseHistory>> {
-        val user = userRepository.findById(userId).orElseThrow { GlobalExceptions.NotFoundException("사용자를 찾을 수 없습니다.") }
+        val user = userRepository.findById(userId).orElseThrow { GlobalExceptions.NotFoundException(
+            USER_NOT_FOUND
+        ) }
         if (user.tickets < ticketCount) {
             throw RaffleExceptions.ExceedTickets()
         }
 
         val raffle = raffleRepository.findById(raffleId)
-            .orElseThrow { GlobalExceptions.NotFoundException("Raffle을 찾을 수 없습니다.") }
+            .orElseThrow { GlobalExceptions.NotFoundException(RAFFLE_NOT_FOUND) }
 
         if (raffle.status != RaffleStatus.ACTIVE) {
-            throw RaffleExceptions.AlreadyFinishedException("이미 완료된 Raffle입니다. 새로운 Raffle에 참가해주세요.")
+            throw RaffleExceptions.AlreadyFinishedException(RAFFLE_ALREADY_INACTIVE)
         }
 
         if (raffle.currentCount >= raffle.totalCount) {
-            throw RaffleExceptions.AlreadyFinishedException("이미 완료된 Raffle입니다. 새로운 Raffle에 참가해주세요.")
+            throw RaffleExceptions.AlreadyFinishedException(RAFFLE_MAX_CAPACITY_REACHED)
         }
         if (raffle.totalCount < raffle.currentCount + ticketCount) {
             throw RaffleExceptions.TotalTicketExceed()

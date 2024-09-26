@@ -1,8 +1,10 @@
 package com.van1164.lottoissofar.common.exception
 
-class GlobalExceptions {
-    open class GlobalException : RuntimeException()
-    class NotFoundException(override val message : String = "찾을 수 없습니다.") :GlobalException()
+import com.van1164.lottoissofar.common.exception.ErrorCode.*
 
-    class InternalErrorException(override val message: String = "내부 오류 발생") : GlobalException()
+class GlobalExceptions {
+    open class GlobalException(val errorCode: ErrorCode) : RuntimeException()
+    class NotFoundException(errorCode: ErrorCode = NOT_FOUND) :GlobalException(errorCode)
+
+    class InternalErrorException(errorCode: ErrorCode = INTERNAL_SERVER_ERROR) : GlobalException(errorCode)
 }
