@@ -13,7 +13,7 @@ enum class ErrorCode (val status:Int, val code:String, val message:String, priva
     MESSAGE_SEND_FAIL(400, "C006", "메시지 전송 실패"),
 
     // Raffle
-    RAFFLE_NOT_FOUND(404, "R001", "Raffle을 찾을 수 없습니다."),
+    RAFFLE_NOT_FOUND(404, "R001", "Raffle을 찾을 수 없습니다.", {raffleId -> "래플 ID : $raffleId | Raffle을 찾을 수 없습니다."}),
     RAFFLE_ALREADY_INACTIVE(409, "R002", "이미 완료된 Raffle입니다. 새로운 Raffle에 참가해주세요."),
     RAFFLE_MAX_CAPACITY_REACHED(409, "R003", "필요한 인원이 모두 채워져 Raffle 참여가 마감되었습니다. 새로운 Raffle에 참가해주세요."),
     RAFFLE_PURCHASE_LOCK_TIMEOUT(408, "R004", "Raffle 결제 과정에서 시간 초과가 발생했습니다."),
