@@ -37,7 +37,7 @@ class ItemService(
     }
 
     @Transactional
-    fun stop(id: Long) : ResponseEntity<Any> {
+    fun stop(id: Long): ResponseEntity<Any> {
         val item = findById(id)
         item.possibleRaffle = false
         return ResponseEntity.ok().build()
@@ -52,15 +52,18 @@ class ItemService(
     }
 
     fun findById(id: Long): Item {
-        return itemJpaRepository.findById(id).orElseThrow { GlobalExceptions.NotFoundException(
-            NOT_FOUND.setMessageWith(id)) }
+        return itemJpaRepository.findById(id).orElseThrow {
+            GlobalExceptions.NotFoundException(
+                NOT_FOUND
+            )
+        }
     }
 
     @Transactional
     fun createDescriptionImage(itemId: Long, image: MultipartFile): ResponseEntity<Any> {
         val item = findById(itemId)
-        val imageUrl =  s3Component.imageUpload(image)
-        val itemImage = ItemDescriptionImage(imageUrl,item)
+        val imageUrl = s3Component.imageUpload(image)
+        val itemImage = ItemDescriptionImage(imageUrl, item)
         item.imageList.add(itemImage)
         return ResponseEntity.ok().body(itemImage)
     }

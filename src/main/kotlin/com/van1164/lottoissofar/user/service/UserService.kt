@@ -38,14 +38,17 @@ class UserService(
 
     fun findByUserId(userId: String): User {
         return userRepository.findUserByUserId(userId)
-            ?: run { throw GlobalExceptions.NotFoundException(NOT_FOUND.setMessageWith(userId)) };
+            ?: run {
+                println("not found loginId : $userId")
+                throw GlobalExceptions.NotFoundException(NOT_FOUND)
+            };
     }
 
     @Transactional
     fun saveTestUser(): String {
         val user = User(
             "testUser" + UUID.randomUUID().toString(),
-            "testEmaiil" + UUID.randomUUID().toString(),
+            "testEmail" + UUID.randomUUID().toString(),
             UUID.randomUUID().toString()
         )
         userRepository.save(user)
@@ -61,7 +64,8 @@ class UserService(
                 userRepository.save(user)
                 return user.tickets
             } else {
-                throw GlobalExceptions.InternalErrorException(USER_TICKET_LOCK_TIMEOUT.setMessageWith(user.userId))
+                println("사용자 ID: ${user.userId} | 응모권 추가에 실패하였습니다.")
+                throw GlobalExceptions.InternalErrorException(USER_TICKET_LOCK_TIMEOUT)
             }
         } finally {
             if (userLock.isHeldByCurrentThread) {
