@@ -14,4 +14,8 @@ data class ItemDescriptionImage(
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     val item : Item
 
-): BaseEntity()
+): BaseEntity() {
+    override fun toString(): String {
+        return "ItemDescriptionImage(imageUrl='$imageUrl')"
+    }
+}

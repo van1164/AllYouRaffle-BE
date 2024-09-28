@@ -79,13 +79,14 @@ class GlobalExceptionHandler(
     fun handleRuntimeException(
         e: RuntimeException
     ) : ErrorResponse{
+        e.printStackTrace()
         GlobalScope.launch {
             var userId : String? =null
             try {
                 userId = SecurityContextHolder.getContext().authentication.name
             }catch (e:Exception){}
 
-            discordService.sendMessage("사용자 userId:$userId\n예상치 못한 에러 발생\n메시지:${e.message}\n원인:${e.cause}")
+            discordService.sendMessage("사용자 userId:$userId\n예상치 못한 에러 발생\n메시지:${e.message}\n원인:${e.stackTraceToString().substring(0..1000)}")
         }
         return ErrorResponse(
             message = e.message,

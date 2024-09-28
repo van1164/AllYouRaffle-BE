@@ -1,13 +1,11 @@
 package com.van1164.lottoissofar.common.auth.controller
 
 import com.van1164.lottoissofar.common.auth.service.AuthService
-import com.van1164.lottoissofar.common.dto.user.JwtTokenResponse
-import com.van1164.lottoissofar.common.dto.user.MobileLoginResponse
-import com.van1164.lottoissofar.common.dto.user.MobileUserLoginDto
-import com.van1164.lottoissofar.common.dto.user.PhoneNumberVerifyDto
+import com.van1164.lottoissofar.common.dto.user.*
 import com.van1164.lottoissofar.common.security.CustomOAuth2User
 import com.van1164.lottoissofar.common.security.CustomOAuth2UserService
 import com.van1164.lottoissofar.common.security.JwtUtil
+import com.van1164.lottoissofar.user.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
@@ -17,7 +15,8 @@ import org.springframework.web.bind.annotation.*
 class AuthController(
     private val jwtUtil: JwtUtil,
     private val customOAuth2UserService: CustomOAuth2UserService,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val userService: UserService
 ) {
     @PostMapping("/verify_phone")
     fun verifyPhone(
@@ -38,6 +37,26 @@ class AuthController(
         return token
     }
 
+
+    @PostMapping("/apple")
+    fun appleLogin(@RequestBody appleLoginDto : AppleLoginDto) : MobileLoginResponse {
+        userService.findByUserId("apple:${appleLoginDto.userId}")
+
+        return createMobileLoginResponse("apple:${appleLoginDto.userId}")
+    }
+
+    @PostMapping("/apple/signup")
+    fun appleSignUp(@RequestBody mobileUserLoginDto: AppleSignupDto) : MobileLoginResponse {
+        val oAuthUser = customOAuth2UserService.customOAuth2UserForApple(
+            name = mobileUserLoginDto.name,
+            email = mobileUserLoginDto.email,
+            profileImageUrl = mobileUserLoginDto.profileImageUrl,
+            userNameAttributeNameValue = mobileUserLoginDto.userNameAttributeNameValue,
+            appleId = mobileUserLoginDto.userId
+        )
+        return createMobileLoginResponse(oAuthUser.userId)
+    }
+
     @PostMapping("")
     fun mobileLogin(@RequestBody mobileUserLoginDto: MobileUserLoginDto): MobileLoginResponse {
          val oAuthUser = customOAuth2UserService.customOAuth2User(
@@ -47,9 +66,13 @@ class AuthController(
              profileImageUrl = mobileUserLoginDto.profileImageUrl,
              userNameAttributeNameValue = mobileUserLoginDto.userNameAttributeNameValue
          )
+        return createMobileLoginResponse(oAuthUser.userId)
+    }
+
+    private fun createMobileLoginResponse(userId : String): MobileLoginResponse {
         return MobileLoginResponse(
-            jwt =  jwtUtil.generateJwtToken(oAuthUser.userId),
-            refreshToken = jwtUtil.generateRefreshToken(oAuthUser.userId)
+            jwt =  jwtUtil.generateJwtToken(userId),
+            refreshToken = jwtUtil.generateRefreshToken(userId)
         )
     }
 
@@ -66,4 +89,6 @@ class AuthController(
         if(!jwtUtil.validateToken(jwt,jwtUtil.extractUsername(jwt))) return ResponseEntity.badRequest().build<Any>()
        return ResponseEntity.ok().build()
     }
+
+
 }

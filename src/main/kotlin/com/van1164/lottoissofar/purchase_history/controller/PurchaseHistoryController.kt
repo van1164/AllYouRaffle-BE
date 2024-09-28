@@ -6,6 +6,7 @@ import com.van1164.lottoissofar.common.dto.purchase_history.PaidRaffleDto
 import com.van1164.lottoissofar.purchase_history.service.PurchaseHistoryService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -14,13 +15,17 @@ class PurchaseHistoryController(
     private val purchaseHistoryService: PurchaseHistoryService
 ) {
 
-    @GetMapping("")
-    fun getPurchaseHistory(user : User): List<PurchaseHistory> {
-        return purchaseHistoryService.getPurchaseList(user)
-    }
+//    @GetMapping("")
+//    fun getPurchaseHistory(user : User): List<PurchaseHistory> {
+//        return purchaseHistoryService.getPurchaseList(user)
+//    }
 
-    @GetMapping("/some-uri")
-    fun getAll(user: User): List<PaidRaffleDto> {
-        return purchaseHistoryService.getPaidRaffles(user)
+    @GetMapping("")
+    fun getAll(
+        user: User,
+        @RequestParam(value = "offset", defaultValue = "0") offset : Long,
+        @RequestParam(value = "size", defaultValue = "10") size: Long
+    ): List<PaidRaffleDto> {
+        return purchaseHistoryService.getPaidRaffles(user,offset,size)
     }
 }
