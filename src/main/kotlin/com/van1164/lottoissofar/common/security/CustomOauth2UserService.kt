@@ -1,6 +1,8 @@
 package com.van1164.lottoissofar.common.security
 
 import com.van1164.lottoissofar.common.domain.User
+import com.van1164.lottoissofar.common.exception.ErrorCode
+import com.van1164.lottoissofar.common.exception.ErrorCode.*
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import com.van1164.lottoissofar.user.service.UserService
@@ -31,11 +33,11 @@ class CustomOAuth2UserService(
         val userNameAttributeNameKey =
             userRequest.clientRegistration.providerDetails.userInfoEndpoint.userNameAttributeName
         val userNameAttributeNameValue = oauth2User.attributes[userNameAttributeNameKey] as String?
-            ?: run { throw GlobalExceptions.InternalErrorException("소셜로그인에서 이메일을 불러올 수 없습니다.") }
+            ?: run { throw GlobalExceptions.InternalErrorException(SOCIAL_EMAIL_LOAD_FAIL) }
         val email = oauth2User.attributes["email"] as String?
-            ?: run { throw GlobalExceptions.InternalErrorException("소셜로그인에서 이메일을 불러올 수 없습니다.") }
+            ?: run { throw GlobalExceptions.InternalErrorException(SOCIAL_EMAIL_LOAD_FAIL) }
         val name = oauth2User.attributes["name"] as String?
-            ?: run { throw GlobalExceptions.InternalErrorException("소셜로그인에서 이름을 불러올 수 없습니다.") }
+            ?: run { throw GlobalExceptions.InternalErrorException(SOCIAL_NAME_LOAD_FAIL) }
 
         println("VVVVVVVVVVVVVVVVVVVVVV")
         println(oauth2User.attributes.toString())

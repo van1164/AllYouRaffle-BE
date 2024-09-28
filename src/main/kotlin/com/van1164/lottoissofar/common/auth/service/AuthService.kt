@@ -2,6 +2,8 @@ package com.van1164.lottoissofar.common.auth.service
 
 import com.van1164.lottoissofar.common.dto.response.ErrorResponse
 import com.van1164.lottoissofar.common.dto.sms.SmsMessageDto
+import com.van1164.lottoissofar.common.exception.ErrorCode
+import com.van1164.lottoissofar.common.exception.ErrorCode.*
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.common.security.JwtUtil
 import com.van1164.lottoissofar.sms.SmsService
@@ -19,7 +21,7 @@ class AuthService(
     fun createNewToken(refreshToken: String): String {
         val userId = jwtUtil.extractUsername(refreshToken)
         return userJpaRepository.findUserByUserId(userId).let { user ->
-            if (user == null) throw GlobalExceptions.NotFoundException("사용자를 찾을 수 없습니다.")
+            if (user == null) throw GlobalExceptions.NotFoundException(USER_NOT_FOUND)
             return@let jwtUtil.generateJwtToken(userId)
         }
     }
@@ -37,7 +39,7 @@ class AuthService(
             message = "[올유레플] 인증번호 [$secretNumber]\n절대 타인에게 알려주지 마세요."
         )
         val response = smsService.sendOne(smsMessageDto)
-        if (response == null) throw GlobalExceptions.InternalErrorException("메시지 전송 실패")
+        if (response == null) throw GlobalExceptions.InternalErrorException(MESSAGE_SEND_FAIL)
         else return ResponseEntity.ok(hashMapOf("secretKey" to secretNumber))
     }
 
