@@ -59,7 +59,7 @@ class RaffleService(
         user: User
     ): ResponseEntity<PurchaseHistory> {
         val raffle = raffleRepository.findById(raffleId)
-            .orElseThrow { GlobalExceptions.NotFoundException(RAFFLE_NOT_FOUND.setMessageWith(raffleId)) }
+            .orElseThrow { GlobalExceptions.NotFoundException(RAFFLE_NOT_FOUND) }
         validateRaffleStatus(raffle, RAFFLE_ALREADY_INACTIVE)
         validateTicketCount(raffle, RAFFLE_MAX_CAPACITY_REACHED)
 

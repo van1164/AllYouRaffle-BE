@@ -55,7 +55,7 @@ class GlobalExceptionHandler(
         e: GlobalExceptions.NotFoundException
     ) : ErrorResponse{
         return ErrorResponse(
-            message = e.errorCode.getFormattedMessage(),
+            message = e.errorCode.message,
             description = e.message
         )
     }
@@ -66,7 +66,7 @@ class GlobalExceptionHandler(
         e: GlobalExceptions.InternalErrorException
     ) : ErrorResponse{
         return ErrorResponse(
-            message = e.errorCode.getFormattedMessage(),
+            message = e.errorCode.message,
             description = e.message
         )
     }
