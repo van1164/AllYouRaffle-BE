@@ -4,6 +4,8 @@ import com.van1164.lottoissofar.common.domain.Item
 import com.van1164.lottoissofar.common.domain.ItemDescriptionImage
 import com.van1164.lottoissofar.common.domain.Raffle
 import com.van1164.lottoissofar.common.dto.item.CreateItemDto
+import com.van1164.lottoissofar.common.exception.ErrorCode
+import com.van1164.lottoissofar.common.exception.ErrorCode.*
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.common.s3.S3Component
 import com.van1164.lottoissofar.common.util.softDelete
@@ -35,7 +37,7 @@ class ItemService(
     }
 
     @Transactional
-    fun stop(id: Long) : ResponseEntity<Any> {
+    fun stop(id: Long): ResponseEntity<Any> {
         val item = findById(id)
         item.possibleRaffle = false
         return ResponseEntity.ok().build()
@@ -50,14 +52,18 @@ class ItemService(
     }
 
     fun findById(id: Long): Item {
-        return itemJpaRepository.findById(id).orElseThrow { GlobalExceptions.NotFoundException("Item의 id를 찾을 수 없습니다.") }
+        return itemJpaRepository.findById(id).orElseThrow {
+            GlobalExceptions.NotFoundException(
+                NOT_FOUND
+            )
+        }
     }
 
     @Transactional
     fun createDescriptionImage(itemId: Long, image: MultipartFile): ResponseEntity<Any> {
         val item = findById(itemId)
-        val imageUrl =  s3Component.imageUpload(image)
-        val itemImage = ItemDescriptionImage(imageUrl,item)
+        val imageUrl = s3Component.imageUpload(image)
+        val itemImage = ItemDescriptionImage(imageUrl, item)
         item.imageList.add(itemImage)
         return ResponseEntity.ok().body(itemImage)
     }

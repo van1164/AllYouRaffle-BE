@@ -4,7 +4,7 @@ import com.van1164.lottoissofar.common.exception.ErrorCode
 import com.van1164.lottoissofar.common.exception.ErrorCode.*
 
 class RaffleExceptions {
-    open class RaffleException(errorCode: ErrorCode) : RuntimeException()
+    open class RaffleException(val errorCode: ErrorCode) : RuntimeException()
 
     class AlreadyFinishedException(errorCode: ErrorCode) : RaffleException(errorCode)
 
