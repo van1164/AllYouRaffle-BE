@@ -6,6 +6,7 @@ import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPl
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.van1164.lottoissofar.common.domain.Item
+import com.van1164.lottoissofar.common.domain.ItemDescriptionImage
 import com.van1164.lottoissofar.common.domain.Raffle
 import com.van1164.lottoissofar.common.domain.RaffleStatus
 import com.van1164.lottoissofar.common.dto.item.CreateItemDto
@@ -42,7 +43,9 @@ class ItemServiceTest @Autowired constructor(
 
     @BeforeEach
     fun setup(){
-        savedItem = fixtureMonkey.giveMeBuilder<Item>().set("raffleList", mutableListOf<Raffle>()).setNull("id").sample().let {
+
+        savedItem = fixtureMonkey.giveMeBuilder<Item>().setNull("id").set("raffleList", mutableListOf<Raffle>()).set("imageList",listOf<ItemDescriptionImage>()).set("defaultTotalCount", 10).sample()
+            .let {
             itemJpaRepository.save(it)
         }
     }

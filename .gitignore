@@ -42,3 +42,5 @@ out/
 k6-v0.51.0-windows-amd64/
 src/main/resources/application-*.properties
 src/main/kotlin/com/van1164/lottoissofar/common/service/DBInit.kt
+
+k6-v0.51.0-macos-amd64/
