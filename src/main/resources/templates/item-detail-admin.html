@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Item Details</title>
+</head>
+<body>
+    <div class="container">
+        <h1 id="itemName">Item Name</h1>
+        <p id="itemDescription">Item Description</p>
+
+        <!-- 이미지 추가 폼 -->
+        <form id="uploadImageForm" enctype="multipart/form-data">
+            <label for="image">Add Description Image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required />
+            <button type="submit">Upload Image</button>
+        </form>
+
+        <!-- 이미지 목록 -->
+        <h3>Description Images</h3>
+        <ul id="imageList">
+            <!-- 이미지 목록이 여기에 로드됩니다 -->
+        </ul>
+    </div>
+
+    <script src="/js/item-detail.js"></script>
+</body>
+</html>

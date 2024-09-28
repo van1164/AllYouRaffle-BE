@@ -16,7 +16,7 @@ class CustomUserDetailService(
     override fun loadUserByUsername(loginId : String): UserDetails {
         val user = userService.findByUserId(loginId)
         val userDetails = userToUserDetails(user)
-        return userDetails;
+        return userDetails
     }
 
     private fun userToUserDetails(user : User): CustomUserDetails {
