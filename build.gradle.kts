@@ -114,8 +114,8 @@ dependencies {
     kapt("jakarta.annotation:jakarta.annotation-api")
     kapt("jakarta.persistence:jakarta.persistence-api")
     implementation(kotlin("stdlib-jdk8"))
-
-
+    //p6spy
+    implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
 }
 
 val generated = file("src/main/generated")
