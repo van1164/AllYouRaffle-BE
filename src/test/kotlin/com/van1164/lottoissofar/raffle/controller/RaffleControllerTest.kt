@@ -47,7 +47,7 @@ class RaffleControllerTest @Autowired constructor(
         raffleRepository.deleteAll()
         itemJpaRepository.deleteAll()
 
-        val item = fixtureMonkey.giveMeBuilder<Item>().setNull("id").set("raffleList", mutableListOf<Raffle>()).set("defaultTotalCount", 10).set("possibleRaffle",true).sample()
+        val item = fixtureMonkey.giveMeBuilder<Item>().setNull("id").set("raffleList", mutableListOf<Raffle>()).set("imageList",listOf<ItemDescriptionImage>()).set("defaultTotalCount", 10).set("possibleRaffle",true).sample()
         val insertRaffle = Raffle(
             totalCount = 5,
             item = item,

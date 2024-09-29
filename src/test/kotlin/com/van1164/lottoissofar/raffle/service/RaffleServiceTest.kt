@@ -82,8 +82,7 @@ class RaffleServiceTest @Autowired constructor(
 //            userAddress.user = it
 //            userJpaRepository.save(it)
 //        }
-
-        item = fixtureMonkey.giveMeBuilder<Item>().setNull("id").set("raffleList", mutableListOf<Raffle>()).set("defaultTotalCount", 10).sample()
+        item = fixtureMonkey.giveMeBuilder<Item>().setNull("id").set("raffleList", mutableListOf<Raffle>()).set("imageList",listOf<ItemDescriptionImage>()).set("defaultTotalCount", 10).sample()
 
 
         raffle = Raffle(
@@ -119,7 +118,7 @@ class RaffleServiceTest @Autowired constructor(
 
         assertEquals(savedRaffle.currentCount,1)
         assertEquals(savedRaffle.purchaseHistoryList.size,1)
-        assertEquals(savedRaffle.purchaseHistoryList[0].id,user.id)
+        assertEquals(savedRaffle.purchaseHistoryList[0].user.id,user.id)
 
     }
 
