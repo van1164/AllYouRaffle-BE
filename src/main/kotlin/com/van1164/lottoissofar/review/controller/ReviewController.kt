@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*
 class ReviewController(
     private val reviewService: ReviewService
 ) {
-    @GetMapping("review")
+    @GetMapping("reviews")
     fun getAll(
         @RequestParam(required = false) cursor: Long?,
         @RequestParam(required = false, defaultValue = "5") size: Int
@@ -28,7 +28,7 @@ class ReviewController(
         return CursorPage(result.content, nextCursor, result.hasNext())
     }
 
-    @GetMapping("user/review")
+    @GetMapping("user/reviews")
     fun getAllWithUser(
         @Parameter(hidden = true) user: User,
         @RequestParam(required = false) cursor: Long?,
@@ -41,7 +41,7 @@ class ReviewController(
         return CursorPage(result.content, nextCursor, result.hasNext())
     }
 
-    @PostMapping
+    @PostMapping("user/reviews")
     fun createNewReview(
         @Parameter(hidden = true) user: User,
         createReviewDto: CreateReviewDto
