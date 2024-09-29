@@ -24,6 +24,17 @@ class ItemService(
     private val raffleService: RaffleService
 ) {
 
+    @Transactional(readOnly = true)
+    fun getAll(): ResponseEntity<List<Item>> {
+        return ResponseEntity.ok(itemJpaRepository.findAll())
+    }
+
+    @Transactional
+    fun getItemById(itemId: Long): Item {
+        return itemJpaRepository.findById(itemId)
+            .orElseThrow { IllegalArgumentException("Invalid item ID") }
+    }
+
     @Transactional
     fun create(createItemDto: CreateItemDto, image: MultipartFile?): ResponseEntity<Any> {
         val imageUrl = image?.let { s3Component.imageUpload(it) }
@@ -53,9 +64,7 @@ class ItemService(
 
     fun findById(id: Long): Item {
         return itemJpaRepository.findById(id).orElseThrow {
-            GlobalExceptions.NotFoundException(
-                NOT_FOUND
-            )
+            GlobalExceptions.NotFoundException(NOT_FOUND)
         }
     }
 
