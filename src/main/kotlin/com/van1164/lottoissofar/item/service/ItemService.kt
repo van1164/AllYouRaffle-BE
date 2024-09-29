@@ -64,9 +64,7 @@ class ItemService(
 
     fun findById(id: Long): Item {
         return itemJpaRepository.findById(id).orElseThrow {
-            GlobalExceptions.NotFoundException(
-                NOT_FOUND
-            )
+            GlobalExceptions.NotFoundException(NOT_FOUND)
         }
     }
 
