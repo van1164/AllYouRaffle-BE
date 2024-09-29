@@ -1,24 +1,21 @@
 package com.van1164.lottoissofar.review.repository
 
 import com.querydsl.core.types.Projections
-import com.querydsl.core.types.dsl.BooleanExpression
-import com.querydsl.core.types.dsl.Expressions
-import com.querydsl.core.types.dsl.StringTemplate
 import com.querydsl.jpa.impl.JPAQueryFactory
-import com.van1164.lottoissofar.common.domain.QReview.*
+import com.van1164.lottoissofar.common.domain.QReview.review
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.dto.review.ReadReviewDto
 import jakarta.persistence.EntityManager
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.support.PageableExecutionUtils
 
 class ReviewRepositoryImpl (
-    private val em: EntityManager
-) {
-    private final val query = JPAQueryFactory(em)
+    em: EntityManager
+) : ReviewRepositoryCustom {
+    private val query = JPAQueryFactory(em)
 
-    fun findAllPaged(cursor: Long, pageable: Pageable): Page<ReadReviewDto> {
+    override fun findAllPaged(cursor: Long, size: Int): Page<ReadReviewDto> {
         val list = query
             .select(
                 Projections
@@ -28,22 +25,23 @@ class ReviewRepositoryImpl (
                     )
             )
             .from(review)
-            .where(review.id.loe(cursor))
+            .where(review.id.lt(cursor))
             .orderBy(review.id.desc())
-            .limit(pageable.pageSize.toLong())
+            .limit(size.toLong())
             .fetch()
 
         val countQuery = {
             query
                 .select(review.count())
                 .from(review)
-                .fetchOne()!!
+                .where(review.id.lt(cursor))
+                .fetchOne()?: 0L
         }
 
-        return PageableExecutionUtils.getPage(list, pageable, countQuery)
+        return PageableExecutionUtils.getPage(list, PageRequest.ofSize(size), countQuery)
     }
 
-    fun findAllPagedWithUser(user: User, cursor: Long, pageable: Pageable): Page<ReadReviewDto> {
+    override fun findAllPagedWithUser(user: User, cursor: Long, size: Int): Page<ReadReviewDto> {
         val list = query
             .select(
                 Projections
@@ -55,20 +53,23 @@ class ReviewRepositoryImpl (
             .from(review)
             .where(
                 review.user.id.eq(user.id),
-                review.id.loe(cursor)
+                review.id.lt(cursor)
             )
             .orderBy(review.id.desc())
-            .limit(pageable.pageSize.toLong())
+            .limit(size.toLong())
             .fetch()
 
         val countQuery = {
             query
                 .select(review.count())
                 .from(review)
-                .where(review.user.id.eq(user.id))
-                .fetchOne()!!
+                .where(
+                    review.user.id.eq(user.id),
+                    review.id.lt(cursor)
+                )
+                .fetchOne()?: 0L
         }
 
-        return PageableExecutionUtils.getPage(list, pageable, countQuery)
+        return PageableExecutionUtils.getPage(list, PageRequest.ofSize(size), countQuery)
     }
 }
