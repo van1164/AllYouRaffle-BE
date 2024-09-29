@@ -9,7 +9,7 @@ import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
 import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepository
 import com.van1164.lottoissofar.raffle.exception.RaffleExceptions
-import com.van1164.lottoissofar.raffle.repository.RaffleJpaRepository
+import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
@@ -28,7 +28,7 @@ import org.springframework.test.annotation.Rollback
 class RaffleWithTicketTest @Autowired constructor(
     val raffleService: RaffleService,
     val userJpaRepository: UserJpaRepository,
-    val raffleJpaRepository: RaffleJpaRepository,
+    val raffleJpaRepository: RaffleRepository,
     val itemJpaRepository: ItemJpaRepository,
     val purchaseHistoryRepository: PurchaseHistoryRepository,
     @PersistenceContext val em : EntityManager
@@ -82,7 +82,7 @@ class RaffleWithTicketTest @Autowired constructor(
         userAddress.user = user
         userJpaRepository.save(user)
 
-        item = fixtureMonkey.giveMeBuilder<Item>().setNull("id").set("raffleList", mutableListOf<Raffle>()).set("defaultTotalCount", 10).sample()
+        item = fixtureMonkey.giveMeBuilder<Item>().setNull("id").set("raffleList", mutableListOf<Raffle>()).set("imageList",listOf<ItemDescriptionImage>()).set("defaultTotalCount", 10).sample()
 
         raffle = Raffle(
             totalCount = 100,
