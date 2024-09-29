@@ -59,7 +59,7 @@ class UserService(
         val userLock: RLock = redissonClient.getLock("userLock:${user.userId}")
         try {
             if (userLock.tryLock(10, TimeUnit.SECONDS)) {
-                user.tickets += 1
+                user.tickets += count
                 userRepository.save(user)
                 return user.tickets
             } else {
