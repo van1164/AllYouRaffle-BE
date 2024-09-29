@@ -42,6 +42,15 @@ class UserController(
         return userService.ticketPlus(user,1)
     }
 
+    @PostMapping("/tickets/plus/{reward}")
+    fun ticketsPlus(
+        @Parameter(hidden = true)
+        user: User,
+        @PathVariable(name= "reward") reward: Int
+    ): Int {
+        return userService.ticketPlus(user,reward)
+    }
+
     @PostMapping("/set_address")
     fun setAddress(
         @Parameter(hidden = true)
