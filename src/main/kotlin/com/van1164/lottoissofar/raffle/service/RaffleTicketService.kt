@@ -1,12 +1,8 @@
 package com.van1164.lottoissofar.raffle.service
 
 import com.van1164.lottoissofar.common.discord.DiscordService
-import com.van1164.lottoissofar.common.domain.PurchaseHistory
-import com.van1164.lottoissofar.common.domain.Raffle
-import com.van1164.lottoissofar.common.domain.RaffleStatus
-import com.van1164.lottoissofar.common.domain.User
+import com.van1164.lottoissofar.common.domain.*
 import com.van1164.lottoissofar.common.dto.sms.SmsMessageDto
-import com.van1164.lottoissofar.common.exception.ErrorCode
 import com.van1164.lottoissofar.common.exception.ErrorCode.*
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.email.EmailService
@@ -15,6 +11,7 @@ import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepos
 import com.van1164.lottoissofar.raffle.exception.RaffleExceptions
 import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import com.van1164.lottoissofar.sms.SmsService
+import com.van1164.lottoissofar.ticket.service.TicketService
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -35,7 +32,9 @@ class RaffleTicketService(
     private val redissonClient: RedissonClient,
     private val emailService: EmailService,
     private val discordService: DiscordService,
-    private val smsService: SmsService
+    private val smsService: SmsService,
+    private val tickerService: TicketService,
+    private val ticketService: TicketService
 ) {
     @Transactional
     fun purchaseWithTicket(
@@ -74,7 +73,9 @@ class RaffleTicketService(
         if (raffle.currentCount == raffle.totalCount) {
             completeRaffle(raffle)
         }
+
         user.tickets -= ticketCount
+        ticketService.saveTicket(TicketHistory(userId = userId,ticketCount = user.tickets))
         return ResponseEntity.ok().body(history)
     }
 

@@ -4,21 +4,26 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
+import com.van1164.lottoissofar.common.discord.DiscordService
 import com.van1164.lottoissofar.common.domain.*
 import com.van1164.lottoissofar.common.security.JwtUtil
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
 import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepository
 import com.van1164.lottoissofar.raffle.repository.RaffleRepository
+import com.van1164.lottoissofar.ticket.repository.TicketHistoryRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import io.github.van1164.K6Executor
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.RepeatedTest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.annotation.Rollback
+import kotlin.test.Test
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -27,8 +32,14 @@ class RaffleControllerTest @Autowired constructor(
     val raffleRepository: RaffleRepository,
     val itemJpaRepository: ItemJpaRepository,
     val purchaseHistoryRepository: PurchaseHistoryRepository,
-    val jwtUtil: JwtUtil
+    val jwtUtil: JwtUtil,
+    @MockBean
+    val discordService: DiscordService,
+    val ticketHistoryRepository: TicketHistoryRepository,
+
 ) {
+
+
 
     var fixtureMonkey: FixtureMonkey = FixtureMonkey.builder()
         .plugin(KotlinPlugin())
@@ -41,6 +52,7 @@ class RaffleControllerTest @Autowired constructor(
     @Transactional
     @Rollback
     fun beforeEach() {
+        ticketHistoryRepository.deleteAll()
         purchaseHistoryRepository.deleteAll()
         raffleRepository.deleteAll()
         itemJpaRepository.deleteAll()
@@ -58,6 +70,7 @@ class RaffleControllerTest @Autowired constructor(
 
     //TODO : 아직 성공 못함
     @RepeatedTest(1)
+    @DisplayName("동시성 테스트")
     fun concurrencyPurchase(){
         println(raffle.id)
         val args = HashMap<String,String>()
@@ -72,6 +85,25 @@ class RaffleControllerTest @Autowired constructor(
 //        assertEquals(k6Result.successRequest,5)
         val purchaseHistoryCount = purchaseHistoryRepository.count()
         assertEquals(purchaseHistoryCount,5)
+    }
+
+
+    @RepeatedTest(1)
+    fun concurrencyPurchaseWithTickets(){
+        println(raffle.id)
+        val args = HashMap<String,String>()
+        args["RAFFLEID"] = raffle.id.toString()
+        for (i : Int in (1..10)){
+            args["JWT"] = jwtUtil.generateJwtToken("testMyId")
+        }
+        val k6 = K6Executor.builder().scriptPath("k6_executor/purchaseWithTickets.js").args(args).build()
+        val k6Result = k6.runTest()
+        k6Result.printResult()
+//        println(k6Result.totalRequest)
+//        assertEquals(k6Result.successRequest,5)
+        val purchaseHistoryCount = purchaseHistoryRepository.count()
+        assertEquals(purchaseHistoryCount,5)
+        assertEquals(ticketHistoryRepository.findAll().count(),5)
     }
 
     companion object {

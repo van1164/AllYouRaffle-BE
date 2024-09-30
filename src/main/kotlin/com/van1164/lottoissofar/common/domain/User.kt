@@ -2,6 +2,7 @@ package com.van1164.lottoissofar.common.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
+import lombok.ToString
 import org.hibernate.annotations.ColumnDefault
 import kotlin.random.Random
 
@@ -9,7 +10,7 @@ import kotlin.random.Random
 @Table(name = "user")
 data class User(
     @Column(name = "user_id", unique = true, nullable = false)
-    val userId: String,
+    var userId: String,
 
     @Column(name = "email", nullable = false)
     val email: String,
@@ -41,9 +42,26 @@ data class User(
     var role : Role = Role.USER,
 
     @JsonIgnore
+    @ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = [CascadeType.ALL])
     var purchaseHistoryList : MutableList<PurchaseHistory> = mutableListOf()
 ) : BaseEntity(){
+
+    fun toDeletedUser():DeletedUser{
+        return DeletedUser(
+            userId = userId,
+            email = email,
+            name = name,
+            nickname = nickname,
+            password = password,
+            phoneNumber = phoneNumber,
+            profileImageUrl = profileImageUrl,
+            tickets = tickets,
+            address = address,
+            role = role,
+            formerId = id
+        )
+    }
 
     companion object{
         fun createRandomNickname(): String{

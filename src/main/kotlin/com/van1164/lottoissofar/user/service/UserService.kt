@@ -1,5 +1,6 @@
 package com.van1164.lottoissofar.user.service
 
+import com.van1164.lottoissofar.common.domain.TicketHistory
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.dto.user.PhoneNumberRequestDto
 import com.van1164.lottoissofar.common.dto.user.UserAddressRequestDto
@@ -7,21 +8,39 @@ import com.van1164.lottoissofar.common.exception.ErrorCode.NOT_FOUND
 import com.van1164.lottoissofar.common.exception.ErrorCode.USER_TICKET_LOCK_TIMEOUT
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.common.security.JwtUtil
+import com.van1164.lottoissofar.ticket.service.TicketService
 import com.van1164.lottoissofar.user.exception.AlreadySavedPhoneNumber
+import com.van1164.lottoissofar.user.repository.DeleteUserRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import org.redisson.api.RLock
 import org.redisson.api.RedissonClient
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Service
 class UserService(
     private val userRepository: UserJpaRepository,
+    private val deletedUserRepository: DeleteUserRepository,
     private val jwtUtil: JwtUtil,
     private val redissonClient: RedissonClient,
+    private val ticketService: TicketService
 ) {
+
+    @Transactional
+    fun deleteUser(userId: String): ResponseEntity<Any> {
+        val user = findByUserId(userId)
+        deletedUserRepository.save(user.toDeletedUser())
+        user.userId += ":deleted:"+UUID.randomUUID().toString()
+        user.phoneNumber = null
+        user.address = null
+        user.deletedDate = LocalDateTime.now()
+        return ResponseEntity.ok().build<Any>()
+    }
+
     @Transactional
     fun registerUserAddress(user: User, userAddress: UserAddressRequestDto) {
         user.address = userAddress.toDomain()
@@ -60,6 +79,7 @@ class UserService(
         try {
             if (userLock.tryLock(10, TimeUnit.SECONDS)) {
                 user.tickets += count
+                ticketService.saveTicket(TicketHistory(user.id,user.tickets))
                 userRepository.save(user)
                 return user.tickets
             } else {

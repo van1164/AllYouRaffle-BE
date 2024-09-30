@@ -2,6 +2,7 @@ package com.van1164.lottoissofar.common.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
+import lombok.ToString
 import java.time.LocalDateTime
 
 @Entity
@@ -32,7 +33,6 @@ data class Raffle(
     @JoinColumn(name = "item", nullable = false)
     var item: Item,
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user")
     var winner: User? = null,

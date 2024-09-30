@@ -2,6 +2,7 @@ package com.van1164.lottoissofar.common.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
+import lombok.ToString
 
 @Entity
 @Table(name = "item")
@@ -31,4 +32,8 @@ data class Item(
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", orphanRemoval = true, cascade = [CascadeType.ALL])
     val imageList : MutableList<ItemDescriptionImage> = mutableListOf()
 
-) : BaseEntity()
+) : BaseEntity() {
+    override fun toString(): String {
+        return "Item(name='$name', category=$category, imageUrl=$imageUrl, description=$description, defaultTotalCount=$defaultTotalCount, possibleRaffle=$possibleRaffle, imageList=$imageList)"
+    }
+}
