@@ -26,6 +26,14 @@ class UserController(
         return user
     }
 
+    @DeleteMapping("")
+    fun deleteUser(
+        @Parameter(hidden = true)
+        user: User
+    ): ResponseEntity<Any> {
+        return userService.deleteUser(user.userId)
+    }
+
     @GetMapping("/tickets")
     fun getUserTickets(
         @Parameter(hidden = true)
