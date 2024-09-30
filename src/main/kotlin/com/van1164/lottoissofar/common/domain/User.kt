@@ -9,7 +9,7 @@ import kotlin.random.Random
 @Table(name = "user")
 data class User(
     @Column(name = "user_id", unique = true, nullable = false)
-    val userId: String,
+    var userId: String,
 
     @Column(name = "email", nullable = false)
     val email: String,
@@ -44,6 +44,22 @@ data class User(
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = [CascadeType.ALL])
     var purchaseHistoryList : MutableList<PurchaseHistory> = mutableListOf()
 ) : BaseEntity(){
+
+    fun toDeletedUser():DeletedUser{
+        return DeletedUser(
+            userId = userId,
+            email = email,
+            name = name,
+            nickname = nickname,
+            password = password,
+            phoneNumber = phoneNumber,
+            profileImageUrl = profileImageUrl,
+            tickets = tickets,
+            address = address,
+            role = role,
+            formerId = id
+        )
+    }
 
     companion object{
         fun createRandomNickname(): String{
