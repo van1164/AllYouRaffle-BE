@@ -66,7 +66,6 @@ class ItemServiceTest @Autowired constructor(
 
         assertEquals(response.statusCode,HttpStatus.OK)
         assertNotNull(itemResult)
-        println(itemResult)
     }
 
     @Test
