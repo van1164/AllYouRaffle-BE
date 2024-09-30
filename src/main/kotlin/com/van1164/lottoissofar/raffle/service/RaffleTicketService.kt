@@ -13,6 +13,7 @@ import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import com.van1164.lottoissofar.sms.SmsService
 import com.van1164.lottoissofar.ticket.service.TicketService
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
+import com.van1164.lottoissofar.winner_history.service.WinnerHistoryService
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -34,7 +35,8 @@ class RaffleTicketService(
     private val discordService: DiscordService,
     private val smsService: SmsService,
     private val tickerService: TicketService,
-    private val ticketService: TicketService
+    private val ticketService: TicketService,
+    private val winnerHistoryService: WinnerHistoryService,
 ) {
     @Transactional
     fun purchaseWithTicket(
@@ -42,9 +44,11 @@ class RaffleTicketService(
         ticketCount: Int,
         userId: Long
     ): ResponseEntity<MutableList<PurchaseHistory>> {
-        val user = userRepository.findById(userId).orElseThrow { GlobalExceptions.NotFoundException(
-            USER_NOT_FOUND
-        ) }
+        val user = userRepository.findById(userId).orElseThrow {
+            GlobalExceptions.NotFoundException(
+                USER_NOT_FOUND
+            )
+        }
         if (user.tickets < ticketCount) {
             throw RaffleExceptions.ExceedTickets()
         }
@@ -75,13 +79,17 @@ class RaffleTicketService(
         }
 
         user.tickets -= ticketCount
-        ticketService.saveTicket(TicketHistory(userId = userId,ticketCount = user.tickets))
+        ticketService.saveTicket(TicketHistory(userId = userId, ticketCount = user.tickets))
         return ResponseEntity.ok().body(history)
     }
 
-    private fun createPurchaseHistoryWithTickets(raffle: Raffle, user: User, ticketCount: Int): MutableList<PurchaseHistory> {
+    private fun createPurchaseHistoryWithTickets(
+        raffle: Raffle,
+        user: User,
+        ticketCount: Int
+    ): MutableList<PurchaseHistory> {
         val historyList = mutableListOf<PurchaseHistory>()
-        repeat(ticketCount){
+        repeat(ticketCount) {
             val history = PurchaseHistory(user, raffle)
             raffle.purchaseHistoryList.add(history)
             user.purchaseHistoryList.add(history)
@@ -97,7 +105,7 @@ class RaffleTicketService(
         raffle.winner = winner
         raffle.status = RaffleStatus.COMPLETED
         raffle.completedDate = LocalDateTime.now()
-
+        winnerHistoryService.saveWinnerHistory(WinnerHistory(winner.userId, raffle.id))
         GlobalScope.launch {
             notifyWinner(raffle, winner)
         }
@@ -127,6 +135,7 @@ class RaffleTicketService(
             }
         }
     }
+
     fun notifyWinner(raffle: Raffle, winner: User) {
         try {
             emailService.sendEmail("Raffle 당첨을 축하드립니다.", raffle, winner)

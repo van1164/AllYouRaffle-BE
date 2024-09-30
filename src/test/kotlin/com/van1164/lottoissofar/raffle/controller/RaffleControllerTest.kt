@@ -12,6 +12,7 @@ import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepos
 import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import com.van1164.lottoissofar.ticket.repository.TicketHistoryRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
+import com.van1164.lottoissofar.winner_history.repository.WinnerHistoryRepository
 import io.github.van1164.K6Executor
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -36,8 +37,9 @@ class RaffleControllerTest @Autowired constructor(
     @MockBean
     val discordService: DiscordService,
     val ticketHistoryRepository: TicketHistoryRepository,
+    val winnerHistoryRepository: WinnerHistoryRepository,
 
-) {
+    ) {
 
 
 
@@ -53,6 +55,7 @@ class RaffleControllerTest @Autowired constructor(
     @Rollback
     fun beforeEach() {
         ticketHistoryRepository.deleteAll()
+        winnerHistoryRepository.deleteAll()
         purchaseHistoryRepository.deleteAll()
         raffleRepository.deleteAll()
         itemJpaRepository.deleteAll()
@@ -85,6 +88,9 @@ class RaffleControllerTest @Autowired constructor(
 //        assertEquals(k6Result.successRequest,5)
         val purchaseHistoryCount = purchaseHistoryRepository.count()
         assertEquals(purchaseHistoryCount,5)
+        val winnerHistory = winnerHistoryRepository.findByUserId("testMyId")
+        assertEquals(winnerHistory.count(),1)
+        assertEquals(winnerHistory[0].raffleId,raffle.id)
     }
 
 
@@ -104,6 +110,9 @@ class RaffleControllerTest @Autowired constructor(
         val purchaseHistoryCount = purchaseHistoryRepository.count()
         assertEquals(purchaseHistoryCount,5)
         assertEquals(ticketHistoryRepository.findAll().count(),5)
+        val winnerHistory = winnerHistoryRepository.findByUserId("testMyId")
+        assertEquals(winnerHistory.count(),1)
+        assertEquals(winnerHistory[0].raffleId,raffle.id)
     }
 
     companion object {
