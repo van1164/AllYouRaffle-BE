@@ -52,6 +52,7 @@ class RaffleControllerTest @Autowired constructor(
     @Transactional
     @Rollback
     fun beforeEach() {
+        ticketHistoryRepository.deleteAll()
         purchaseHistoryRepository.deleteAll()
         raffleRepository.deleteAll()
         itemJpaRepository.deleteAll()
