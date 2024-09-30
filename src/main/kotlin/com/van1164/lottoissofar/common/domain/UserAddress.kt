@@ -5,6 +5,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
+import lombok.ToString
 
 @Entity
 @Table(name = "user_addresses")
@@ -47,6 +48,7 @@ data class UserAddress(
     val isDefault: Boolean = false, // 기본 주소 여부
 
     @JsonIgnore
+    @ToString.Exclude
     @OneToOne(mappedBy = "address")
     var user: User? = null, // 사용자 IDs
 

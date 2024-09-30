@@ -1,5 +1,5 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
+import {check, sleep} from 'k6';
 
 const raffleId = __ENV.RAFFLEID;
 export let options = {
@@ -10,7 +10,7 @@ export let options = {
 export default function () {
     // let userId = Math.floor(Math.random() * 10)+1;
     let jwt= __ENV["JWT"]
-    let url = `http://localhost:8080/api/v1/raffle/purchase/`+raffleId
+    let url = `http://localhost:8080/api/v1/raffle/purchase_ticket_one/`+raffleId
     const params = {
         headers: {
             'Content-Type': 'application/json',

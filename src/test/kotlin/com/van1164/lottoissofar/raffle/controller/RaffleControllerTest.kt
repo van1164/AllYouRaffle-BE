@@ -17,11 +17,13 @@ import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.RepeatedTest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.annotation.Rollback
+import kotlin.test.Test
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -67,6 +69,7 @@ class RaffleControllerTest @Autowired constructor(
 
     //TODO : 아직 성공 못함
     @RepeatedTest(1)
+    @DisplayName("동시성 테스트")
     fun concurrencyPurchase(){
         println(raffle.id)
         val args = HashMap<String,String>()
@@ -82,6 +85,7 @@ class RaffleControllerTest @Autowired constructor(
         val purchaseHistoryCount = purchaseHistoryRepository.count()
         assertEquals(purchaseHistoryCount,5)
     }
+
 
     @RepeatedTest(1)
     fun concurrencyPurchaseWithTickets(){

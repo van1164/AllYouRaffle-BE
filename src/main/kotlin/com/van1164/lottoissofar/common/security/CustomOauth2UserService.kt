@@ -83,6 +83,35 @@ class CustomOAuth2UserService(
     }
 
 
+    fun customOAuth2UserForApple(
+        appleId: String,
+        email: String,
+        name: String,
+        profileImageUrl: String?,
+        attributes: MutableMap<String, Any>? = null,
+        userNameAttributeNameKey: String = "sub",
+        userNameAttributeNameValue :String
+    ): CustomOAuth2User {
+        val userId = "apple:$appleId"
+
+        val user = findOrSave(userId, email, name, profileImageUrl)
+        val attr = attributes ?: let {
+            mutableMapOf<String, Any>("email" to email, "name" to name,userNameAttributeNameKey to userNameAttributeNameValue).apply {
+                profileImageUrl?.run { put("picture", this) }
+            }
+        }
+        println(attr)
+
+        return CustomOAuth2User(
+            oauth2User = DefaultOAuth2User(
+                setOf(SimpleGrantedAuthority(user.role.key)),
+                attr,
+                userNameAttributeNameKey
+            ),
+            userId = userId
+        )
+    }
+
     private fun findOrSave(userId: String, email: String, name: String, profileImageUrl: String?): User {
         val user = userRepository.findUserByUserId(userId)
             ?: User(

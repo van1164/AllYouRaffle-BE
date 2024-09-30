@@ -62,8 +62,8 @@ class SecurityConfig(
                     .permitAll()
                     //모바일 사용자 로그인
                     .requestMatchers("/api/v1/login/**").permitAll()
-
-                    .requestMatchers(HttpMethod.GET, "/api/v1/raffle/**")
+                    .requestMatchers("/test/**").permitAll()
+                    .requestMatchers(HttpMethod.GET,"/api/v1/raffle/**")
                     .permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/user/create_test_user")
                     .permitAll()

@@ -19,7 +19,7 @@ class WebConfig(
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:3000",serverUrl)
+            .allowedOrigins("http://localhost:3000",serverUrl,"https://allyouraffle.co.kr")
             .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowedHeaders("Authorization", "Content-Type")
             .exposedHeaders("Custom-Header")
