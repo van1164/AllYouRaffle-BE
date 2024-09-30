@@ -10,6 +10,7 @@ import com.van1164.lottoissofar.common.security.JwtUtil
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
 import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepository
 import com.van1164.lottoissofar.raffle.repository.RaffleRepository
+import com.van1164.lottoissofar.ticket.repository.TicketHistoryRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import io.github.van1164.K6Executor
 import jakarta.transaction.Transactional
@@ -31,7 +32,9 @@ class RaffleControllerTest @Autowired constructor(
     val purchaseHistoryRepository: PurchaseHistoryRepository,
     val jwtUtil: JwtUtil,
     @MockBean
-    val discordService: DiscordService
+    val discordService: DiscordService,
+    val ticketHistoryRepository: TicketHistoryRepository,
+
 ) {
 
 
@@ -78,6 +81,24 @@ class RaffleControllerTest @Autowired constructor(
 //        assertEquals(k6Result.successRequest,5)
         val purchaseHistoryCount = purchaseHistoryRepository.count()
         assertEquals(purchaseHistoryCount,5)
+    }
+
+    @RepeatedTest(1)
+    fun concurrencyPurchaseWithTickets(){
+        println(raffle.id)
+        val args = HashMap<String,String>()
+        args["RAFFLEID"] = raffle.id.toString()
+        for (i : Int in (1..10)){
+            args["JWT"] = jwtUtil.generateJwtToken("testMyId")
+        }
+        val k6 = K6Executor.builder().scriptPath("k6_executor/purchaseWithTickets.js").args(args).build()
+        val k6Result = k6.runTest()
+        k6Result.printResult()
+//        println(k6Result.totalRequest)
+//        assertEquals(k6Result.successRequest,5)
+        val purchaseHistoryCount = purchaseHistoryRepository.count()
+        assertEquals(purchaseHistoryCount,5)
+        assertEquals(ticketHistoryRepository.findAll().count(),5)
     }
 
     companion object {

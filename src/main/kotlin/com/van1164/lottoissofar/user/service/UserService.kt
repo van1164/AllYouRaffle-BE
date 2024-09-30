@@ -1,5 +1,6 @@
 package com.van1164.lottoissofar.user.service
 
+import com.van1164.lottoissofar.common.domain.TicketHistory
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.dto.user.PhoneNumberRequestDto
 import com.van1164.lottoissofar.common.dto.user.UserAddressRequestDto
@@ -7,6 +8,7 @@ import com.van1164.lottoissofar.common.exception.ErrorCode.NOT_FOUND
 import com.van1164.lottoissofar.common.exception.ErrorCode.USER_TICKET_LOCK_TIMEOUT
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.common.security.JwtUtil
+import com.van1164.lottoissofar.ticket.service.TicketService
 import com.van1164.lottoissofar.user.exception.AlreadySavedPhoneNumber
 import com.van1164.lottoissofar.user.repository.DeleteUserRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
@@ -25,6 +27,7 @@ class UserService(
     private val deletedUserRepository: DeleteUserRepository,
     private val jwtUtil: JwtUtil,
     private val redissonClient: RedissonClient,
+    private val ticketService: TicketService
 ) {
 
     @Transactional
@@ -76,6 +79,7 @@ class UserService(
         try {
             if (userLock.tryLock(10, TimeUnit.SECONDS)) {
                 user.tickets += count
+                ticketService.saveTicket(TicketHistory(user.id,user.tickets))
                 userRepository.save(user)
                 return user.tickets
             } else {
