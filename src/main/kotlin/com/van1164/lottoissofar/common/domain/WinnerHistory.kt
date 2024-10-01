@@ -15,6 +15,9 @@ data class WinnerHistory(
     @Enumerated(EnumType.STRING)
     var status: WinnerHistoryStatus = WinnerHistoryStatus.BEFORE,
 
+    @OneToOne
+    var review: Review? = null,
+
     ):BaseEntity()
 
 enum class WinnerHistoryStatus {
