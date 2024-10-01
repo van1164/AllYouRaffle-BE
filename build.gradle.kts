@@ -78,6 +78,10 @@ dependencies {
     // test
 //    testImplementation("org.mockito:mockito-core")
 //    testImplementation("org.mockito.kotlin:mockito-kotlin")
+    testImplementation("io.kotest:kotest-runner-junit5:5.8.1")
+    testImplementation("io.kotest:kotest-assertions-core:5.8.1")
+    runtimeOnly("io.kotest:kotest-runner-junit5:5.8.1")
+    testImplementation("io.mockk:mockk:1.13.12")
 
     // redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
