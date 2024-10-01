@@ -6,9 +6,9 @@ import com.van1164.lottoissofar.common.domain.UserAddress
 import java.util.*
 
 class UserFixtureBuilder {
-    private var userId: String = UUID.randomUUID().toString()
-    private var email: String = UUID.randomUUID().toString()
-    private var name: String = "test"
+    private var userId: String = "testUser" + UUID.randomUUID().toString()
+    private var email: String = "testEmail" + UUID.randomUUID().toString()
+    private var name: String = UUID.randomUUID().toString()
     private var nickname: String = createRandomNickname()
     private var password: String? = UUID.randomUUID().toString()
     private var phoneNumber: String? = null
