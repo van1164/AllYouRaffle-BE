@@ -17,8 +17,8 @@ class FirebaseServiceTest @Autowired constructor(
 
     @Test
     fun sendNotification() {
-        val token = "dGkqJwrLRzOCm0FMXVAUe_:APA91bEgCu5spCROmfmufPFTMq9DQBFjghtvAgIFOabsC4-Z6Yy_A6LyMUbT-VnIQmyNWnPT07q4IVze8A4UTpsViDeWEg9iXCUgqy9vKRorPv6KY5yFkcTQNBiKmTnNcYeCZgLixhTD"
+        val token = fcmToken
         firebaseService.sendNotification(token,"테스트","테스트")
     }
 }
-const val fcmToken = "dGkqJwrLRzOCm0FMXVAUe_:APA91bEgCu5spCROmfmufPFTMq9DQBFjghtvAgIFOabsC4-Z6Yy_A6LyMUbT-VnIQmyNWnPT07q4IVze8A4UTpsViDeWEg9iXCUgqy9vKRorPv6KY5yFkcTQNBiKmTnNcYeCZgLixhTD"
+const val fcmToken ="your token write"
