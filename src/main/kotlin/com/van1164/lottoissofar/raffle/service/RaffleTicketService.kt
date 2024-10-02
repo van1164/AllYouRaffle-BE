@@ -7,6 +7,7 @@ import com.van1164.lottoissofar.common.exception.ErrorCode.*
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.email.EmailService
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
+import com.van1164.lottoissofar.notification.service.NotificationService
 import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepository
 import com.van1164.lottoissofar.raffle.exception.RaffleExceptions
 import com.van1164.lottoissofar.raffle.repository.RaffleRepository
@@ -20,6 +21,9 @@ import org.redisson.api.RedissonClient
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionSynchronization
+import org.springframework.transaction.support.TransactionSynchronizationAdapter
+import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.time.LocalDateTime
 
 
@@ -34,7 +38,8 @@ class RaffleTicketService(
     private val discordService: DiscordService,
     private val smsService: SmsService,
     private val tickerService: TicketService,
-    private val ticketService: TicketService
+    private val ticketService: TicketService,
+    private val notificationService: NotificationService,
 ) {
     @Transactional
     fun purchaseWithTicket(
@@ -42,9 +47,11 @@ class RaffleTicketService(
         ticketCount: Int,
         userId: Long
     ): ResponseEntity<MutableList<PurchaseHistory>> {
-        val user = userRepository.findById(userId).orElseThrow { GlobalExceptions.NotFoundException(
-            USER_NOT_FOUND
-        ) }
+        val user = userRepository.findById(userId).orElseThrow {
+            GlobalExceptions.NotFoundException(
+                USER_NOT_FOUND
+            )
+        }
         if (user.tickets < ticketCount) {
             throw RaffleExceptions.ExceedTickets()
         }
@@ -75,13 +82,17 @@ class RaffleTicketService(
         }
 
         user.tickets -= ticketCount
-        ticketService.saveTicket(TicketHistory(userId = userId,ticketCount = user.tickets))
+        ticketService.saveTicket(TicketHistory(userId = userId, ticketCount = user.tickets))
         return ResponseEntity.ok().body(history)
     }
 
-    private fun createPurchaseHistoryWithTickets(raffle: Raffle, user: User, ticketCount: Int): MutableList<PurchaseHistory> {
+    private fun createPurchaseHistoryWithTickets(
+        raffle: Raffle,
+        user: User,
+        ticketCount: Int
+    ): MutableList<PurchaseHistory> {
         val historyList = mutableListOf<PurchaseHistory>()
-        repeat(ticketCount){
+        repeat(ticketCount) {
             val history = PurchaseHistory(user, raffle)
             raffle.purchaseHistoryList.add(history)
             user.purchaseHistoryList.add(history)
@@ -98,13 +109,38 @@ class RaffleTicketService(
         raffle.status = RaffleStatus.COMPLETED
         raffle.completedDate = LocalDateTime.now()
 
-        GlobalScope.launch {
-            notifyWinner(raffle, winner)
-        }
+        TransactionSynchronizationManager.registerSynchronization(object : TransactionSynchronization {
+            override fun afterCommit() {
+                GlobalScope.launch {
+                    try {
+                        notifyWinner(raffle, winner)
+                        notifyAllUser(raffle)
+                    } catch (e: Exception) {
+                        // 오류 발생 상관 없음.
+                    }
+                }
+            }
+        })
+
+//        GlobalScope.launch {
+//            try {
+//                notifyWinner(raffle, winner)
+//            }catch (e : Exception){
+//                //오류 발생 상관 없음.
+//            }
+//        }
 
         createNewRaffle(raffle)
 
 
+    }
+
+    private fun notifyAllUser(raffle: Raffle) {
+        raffle.purchaseHistoryList.distinctBy { it.user.id }
+            .map { purchaseHistory -> purchaseHistory.user.userId }
+            .forEach { userId ->
+                notificationService.saveNotification(Notification(userId,"${raffle.item.name}}의 당첨자가 발표되었습니다.","자세한 내용은 래플이력에서 확인이 가능합니다."))
+            }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -127,6 +163,7 @@ class RaffleTicketService(
             }
         }
     }
+
     fun notifyWinner(raffle: Raffle, winner: User) {
         try {
             emailService.sendEmail("Raffle 당첨을 축하드립니다.", raffle, winner)
@@ -160,6 +197,14 @@ class RaffleTicketService(
             println("사용자 ID: " + winner.userId + "\n raffle ID: " + raffle.id + "| 디스코드 전송 실패")
         }
 
+        notificationService.saveNotification(
+            Notification(
+                userId = winner.userId,
+                title = "${raffle.item.name}에 당첨되었습니다.",
+                body = "축하드립니다! 당첨 내역에서 확인 가능합니다.",
+                code = NotificationType.WINNER
+            )
+        )
 
         // 알림 보내기 로직 구현
     }
