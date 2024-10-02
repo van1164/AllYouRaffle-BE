@@ -5,6 +5,7 @@ import com.van1164.lottoissofar.common.domain.*
 import com.van1164.lottoissofar.common.dto.sms.SmsMessageDto
 import com.van1164.lottoissofar.common.exception.ErrorCode.*
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
+import com.van1164.lottoissofar.common.firebase.FirebaseService
 import com.van1164.lottoissofar.email.EmailService
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
 import com.van1164.lottoissofar.notification.service.NotificationService
@@ -40,6 +41,7 @@ class RaffleTicketService(
     private val tickerService: TicketService,
     private val ticketService: TicketService,
     private val notificationService: NotificationService,
+    private val firebaseService: FirebaseService
 ) {
     @Transactional
     fun purchaseWithTicket(
@@ -136,11 +138,19 @@ class RaffleTicketService(
     }
 
     private fun notifyAllUser(raffle: Raffle) {
-        raffle.purchaseHistoryList.distinctBy { it.user.id }
+        val title = "${raffle.item.name}}의 당첨자가 발표되었습니다."
+        val body = "자세한 내용은 래플이력에서 확인이 가능합니다."
+        val notifications = raffle.purchaseHistoryList.distinctBy { it.user.id }
             .map { purchaseHistory -> purchaseHistory.user.userId }
-            .forEach { userId ->
-                notificationService.saveNotification(Notification(userId,"${raffle.item.name}}의 당첨자가 발표되었습니다.","자세한 내용은 래플이력에서 확인이 가능합니다."))
+            .map { userId ->
+                Notification(userId, title, body)
             }
+
+        val tokens = raffle.purchaseHistoryList.distinctBy { it.user.id }
+            .mapNotNull { it.user.fcmToken }
+
+        notificationService.saveNotifications(notifications)
+        firebaseService.sendMulticastNotification(tokens, title, body)
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -197,14 +207,19 @@ class RaffleTicketService(
             println("사용자 ID: " + winner.userId + "\n raffle ID: " + raffle.id + "| 디스코드 전송 실패")
         }
 
+        val title = "${raffle.item.name}에 당첨되었습니다."
+        val body = "축하드립니다! 당첨 내역에서 확인 가능합니다."
+
         notificationService.saveNotification(
             Notification(
                 userId = winner.userId,
-                title = "${raffle.item.name}에 당첨되었습니다.",
-                body = "축하드립니다! 당첨 내역에서 확인 가능합니다.",
+                title = title,
+                body = body,
                 code = NotificationType.WINNER
             )
         )
+
+        firebaseService.sendNotification(token = winner.fcmToken, title = title, body = body)
 
         // 알림 보내기 로직 구현
     }

@@ -120,6 +120,10 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     //p6spy
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
+
+    // https://mvnrepository.com/artifact/com.google.firebase/firebase-admin
+    implementation("com.google.firebase:firebase-admin:9.3.0")
+
 }
 
 val generated = file("src/main/generated")

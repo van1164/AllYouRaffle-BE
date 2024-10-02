@@ -6,6 +6,7 @@ import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.van1164.lottoissofar.common.discord.DiscordService
 import com.van1164.lottoissofar.common.domain.*
+import com.van1164.lottoissofar.common.firebase.fcmToken
 import com.van1164.lottoissofar.common.security.JwtUtil
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
 import com.van1164.lottoissofar.notification.repository.NotificationRepository
@@ -143,6 +144,7 @@ class RaffleControllerTest @Autowired constructor(
                 10,
                 userAddress,
                 Role.USER,
+                fcmToken = fcmToken
             )
 
             userAddress.user = user
