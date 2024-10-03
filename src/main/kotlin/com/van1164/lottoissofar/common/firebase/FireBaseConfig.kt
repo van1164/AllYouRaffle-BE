@@ -15,13 +15,17 @@ class FirebaseConfig {
     @Bean
     @Throws(IOException::class)
     fun firebaseApp(): FirebaseApp {
-        val serviceAccount = ClassPathResource("allyouraffleFirebaseKey.json").inputStream
+        if (FirebaseApp.getApps().isEmpty()) {
+            val serviceAccount = ClassPathResource("allyouraffleFirebaseKey.json").inputStream
 //            FileInputStream("src/main/resources/firebase-adminsdk.json")
 
-        val options = FirebaseOptions.builder()
-            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-            .build()
+            val options = FirebaseOptions.builder()
+                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                .build()
 
-        return FirebaseApp.initializeApp(options)
+            return FirebaseApp.initializeApp(options)
+        }
+
+        return FirebaseApp.getInstance()
     }
 }

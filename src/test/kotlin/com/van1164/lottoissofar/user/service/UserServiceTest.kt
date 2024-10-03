@@ -4,6 +4,7 @@ import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.dto.user.FcmTokenDto
 import com.van1164.lottoissofar.common.dto.user.PhoneNumberRequestDto
 import com.van1164.lottoissofar.common.dto.user.UserAddressRequestDto
+import com.van1164.lottoissofar.review.repository.ReviewRepository
 import com.van1164.lottoissofar.user.repository.DeleteUserRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import kotlinx.datetime.LocalDateTime
@@ -24,6 +25,7 @@ class UserServiceTest @Autowired constructor(
     private val userService: UserService,
     private val userJpaRepository: UserJpaRepository,
     private val deleteUserRepository: DeleteUserRepository,
+    private val reviewRepository: ReviewRepository
 ) {
 
     lateinit var user: User
@@ -31,6 +33,7 @@ class UserServiceTest @Autowired constructor(
 
     @BeforeEach
     fun setup() {
+        reviewRepository.deleteAll()
         userJpaRepository.deleteAll()
         user = User(
             "testUserId",
