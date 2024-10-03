@@ -94,7 +94,7 @@ class ItemServiceTest @Autowired constructor(
     @DisplayName("item 삭제 실패 테스트")
     fun deleteFail(){
         assertThrows<GlobalExceptions.NotFoundException> {
-            itemService.delete(10)
+            itemService.delete(9999)
         }
     }
 

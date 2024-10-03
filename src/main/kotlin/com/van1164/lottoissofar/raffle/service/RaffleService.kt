@@ -11,6 +11,7 @@ import com.van1164.lottoissofar.email.EmailService
 import com.van1164.lottoissofar.raffle.exception.RaffleExceptions
 import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import com.van1164.lottoissofar.sms.SmsService
+import com.van1164.lottoissofar.winner_history.service.WinnerHistoryService
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -34,7 +35,8 @@ class RaffleService(
     private val emailService: EmailService,
     private val discordService: DiscordService,
     private val smsService: SmsService,
-    private val raffleTicketService: RaffleTicketService
+    private val raffleTicketService: RaffleTicketService,
+    private val winnerHistoryService: WinnerHistoryService
 ) {
 
     //    @Transactional
@@ -120,6 +122,7 @@ class RaffleService(
         raffle.winner = winner
         raffle.status = RaffleStatus.COMPLETED
         raffle.completedDate = LocalDateTime.now()
+        winnerHistoryService.saveWinnerHistory(WinnerHistory(winner.userId, raffle.id))
 //        raffleRepository.save(raffle)
         GlobalScope.launch {
             notifyWinner(raffle, winner)

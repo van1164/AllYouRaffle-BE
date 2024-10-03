@@ -15,6 +15,7 @@ import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import com.van1164.lottoissofar.sms.SmsService
 import com.van1164.lottoissofar.ticket.service.TicketService
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
+import com.van1164.lottoissofar.winner_history.service.WinnerHistoryService
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -40,6 +41,7 @@ class RaffleTicketService(
     private val smsService: SmsService,
     private val tickerService: TicketService,
     private val ticketService: TicketService,
+    private val winnerHistoryService: WinnerHistoryService,
     private val notificationService: NotificationService,
     private val firebaseService: FirebaseService
 ) {
@@ -110,6 +112,7 @@ class RaffleTicketService(
         raffle.winner = winner
         raffle.status = RaffleStatus.COMPLETED
         raffle.completedDate = LocalDateTime.now()
+        winnerHistoryService.saveWinnerHistory(WinnerHistory(winner.userId, raffle.id))
 
         TransactionSynchronizationManager.registerSynchronization(object : TransactionSynchronization {
             override fun afterCommit() {
@@ -124,16 +127,7 @@ class RaffleTicketService(
             }
         })
 
-//        GlobalScope.launch {
-//            try {
-//                notifyWinner(raffle, winner)
-//            }catch (e : Exception){
-//                //오류 발생 상관 없음.
-//            }
-//        }
-
         createNewRaffle(raffle)
-
 
     }
 

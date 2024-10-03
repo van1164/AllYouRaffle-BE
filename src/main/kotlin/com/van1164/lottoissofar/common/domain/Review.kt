@@ -15,7 +15,10 @@ data class Review(
     val imageUrl: String? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    val user : User
+    val user : User,
+
+    @OneToOne(mappedBy = "review")
+    val winnerHistory: WinnerHistory? = null,
 
     ) : BaseEntity() {
 
