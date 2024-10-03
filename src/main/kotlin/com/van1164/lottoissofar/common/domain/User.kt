@@ -44,7 +44,12 @@ data class User(
     @JsonIgnore
     @ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = [CascadeType.ALL])
-    var purchaseHistoryList : MutableList<PurchaseHistory> = mutableListOf()
+    var purchaseHistoryList : MutableList<PurchaseHistory> = mutableListOf(),
+
+    @Column(name = "fcm_token")
+    @JsonIgnore
+    var fcmToken: String? = null,
+
 ) : BaseEntity(){
 
     fun toDeletedUser():DeletedUser{
