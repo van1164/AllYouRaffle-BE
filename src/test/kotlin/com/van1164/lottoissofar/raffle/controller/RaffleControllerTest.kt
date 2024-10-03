@@ -6,8 +6,10 @@ import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.van1164.lottoissofar.common.discord.DiscordService
 import com.van1164.lottoissofar.common.domain.*
+import com.van1164.lottoissofar.common.firebase.fcmToken
 import com.van1164.lottoissofar.common.security.JwtUtil
 import com.van1164.lottoissofar.item.repository.ItemJpaRepository
+import com.van1164.lottoissofar.notification.repository.NotificationRepository
 import com.van1164.lottoissofar.purchase_history.repository.PurchaseHistoryRepository
 import com.van1164.lottoissofar.raffle.repository.RaffleRepository
 import com.van1164.lottoissofar.ticket.repository.TicketHistoryRepository
@@ -38,6 +40,7 @@ class RaffleControllerTest @Autowired constructor(
     val discordService: DiscordService,
     val ticketHistoryRepository: TicketHistoryRepository,
     val winnerHistoryRepository: WinnerHistoryRepository,
+    val notificationRepository: NotificationRepository
 
     ) {
 
@@ -56,6 +59,7 @@ class RaffleControllerTest @Autowired constructor(
     fun beforeEach() {
         ticketHistoryRepository.deleteAll()
         winnerHistoryRepository.deleteAll()
+        notificationRepository.deleteAll()
         purchaseHistoryRepository.deleteAll()
         raffleRepository.deleteAll()
         itemJpaRepository.deleteAll()
@@ -113,6 +117,8 @@ class RaffleControllerTest @Autowired constructor(
         val winnerHistory = winnerHistoryRepository.findByUserId("testMyId")
         assertEquals(winnerHistory.count(),1)
         assertEquals(winnerHistory[0].raffleId,raffle.id)
+        Thread.sleep(10000L)
+        assertEquals(notificationRepository.findAll().count(),2)
     }
 
     companion object {
@@ -146,6 +152,7 @@ class RaffleControllerTest @Autowired constructor(
                 10,
                 userAddress,
                 Role.USER,
+                fcmToken = fcmToken
             )
 
             userAddress.user = user

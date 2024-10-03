@@ -2,6 +2,7 @@ package com.van1164.lottoissofar.user.service
 
 import com.van1164.lottoissofar.common.domain.TicketHistory
 import com.van1164.lottoissofar.common.domain.User
+import com.van1164.lottoissofar.common.dto.user.FcmTokenDto
 import com.van1164.lottoissofar.common.dto.user.PhoneNumberRequestDto
 import com.van1164.lottoissofar.common.dto.user.UserAddressRequestDto
 import com.van1164.lottoissofar.common.exception.ErrorCode.NOT_FOUND
@@ -91,6 +92,12 @@ class UserService(
                 userLock.unlock()
             }
         }
+    }
+
+    @Transactional
+    fun saveFcmToken(userId: String,fcmTokenDto: FcmTokenDto) {
+        val user = findByUserId(userId)
+        user.fcmToken = fcmTokenDto.token
     }
 
 //    @Transactional

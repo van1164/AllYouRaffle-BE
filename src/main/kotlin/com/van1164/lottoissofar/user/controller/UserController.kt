@@ -2,6 +2,7 @@ package com.van1164.lottoissofar.user.controller
 
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.dto.response.ErrorResponse
+import com.van1164.lottoissofar.common.dto.user.FcmTokenDto
 import com.van1164.lottoissofar.common.dto.user.PhoneNumberRequestDto
 import com.van1164.lottoissofar.common.dto.user.UserAddressRequestDto
 import com.van1164.lottoissofar.user.exception.AlreadySavedPhoneNumber
@@ -66,6 +67,15 @@ class UserController(
         @RequestBody userAddressDto: UserAddressRequestDto
     ) {
         userService.registerUserAddress(user, userAddressDto)
+    }
+
+    @PutMapping("/save_token")
+    fun saveToken(
+        @Parameter(hidden = true)
+        user: User,
+        @RequestBody fcmTokenDto: FcmTokenDto
+    ) {
+        userService.saveFcmToken(user.userId,fcmTokenDto)
     }
 
     @PostMapping("/set_phoneNumber")
