@@ -2,11 +2,11 @@ package com.van1164.lottoissofar.winner_history.repository
 
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
-import com.van1164.lottoissofar.common.domain.QReview
+import com.van1164.lottoissofar.common.domain.*
+import com.van1164.lottoissofar.common.domain.QItem.*
+import com.van1164.lottoissofar.common.domain.QRaffle.*
 import com.van1164.lottoissofar.common.domain.QReview.*
-import com.van1164.lottoissofar.common.domain.QWinnerHistory
 import com.van1164.lottoissofar.common.domain.QWinnerHistory.*
-import com.van1164.lottoissofar.common.domain.WinnerHistory
 import com.van1164.lottoissofar.common.dto.winner_history.ReadWinnerHistoryDto
 import jakarta.persistence.EntityManager
 import org.springframework.data.domain.Page
@@ -25,9 +25,13 @@ class WinnerHistoryRepositoryImpl (
                         ReadWinnerHistoryDto::class.java,
                         winnerHistory.id,
                         winnerHistory.userId,
+                        winnerHistory.raffleId,
+                        raffle.item.name,
+                        raffle.item.imageUrl,
+                        raffle.completedDate,
                         winnerHistory.review.title,
                         winnerHistory.review.description,
-                        winnerHistory.review.imageUrl
+                        winnerHistory.review.imageUrl,
                     )
             )
             .from(winnerHistory)
@@ -35,7 +39,9 @@ class WinnerHistoryRepositoryImpl (
                 winnerHistory.userId.eq(userId),
                 winnerHistory.id.lt(cursor)
             )
-            .innerJoin(winnerHistory.review, review)
+            .innerJoin(raffle).on(raffle.id.eq(winnerHistory.raffleId))
+            .innerJoin(raffle.item, item)
+            .leftJoin(winnerHistory.review, review)
             .orderBy(winnerHistory.id.desc())
             .limit(size.toLong())
             .fetch()
