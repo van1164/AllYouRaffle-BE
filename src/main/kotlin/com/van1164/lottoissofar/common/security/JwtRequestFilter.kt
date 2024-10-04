@@ -1,6 +1,8 @@
 package com.van1164.lottoissofar.common.security
 
+import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.UnsupportedJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -43,6 +45,8 @@ class JwtRequestFilter(
             chain.doFilter(request, response)
         } catch (e: ExpiredJwtException){
             response.sendError(401,"JWTEXP")
+        } catch (e: GlobalExceptions.NotFoundException){
+            response.sendError(401,"NOT FOUND USER")
         }
 
     }

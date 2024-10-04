@@ -64,7 +64,7 @@ class TicketService @Autowired constructor(
 
         val tickets = userJpaRepository.findById(user.id).get().tickets
         assertEquals(tickets,1)
-        assertEquals(ticketHistoryRepository.findAllByUserIdOrderByCreatedDateDesc(user.id).count(),1)
+        assertEquals(ticketHistoryRepository.findAllByUserIdOrderByCreatedDateDesc(user.userId).count(),1)
     }
 
 }

@@ -7,7 +7,7 @@ import jakarta.persistence.*
 data class TicketHistory(
 
     @Column(name = "user_id",nullable = false)
-    val userId: Long,
+    val userId: String,
 
     @Column(name = "ticket_count",nullable = false)
     val ticketCount : Int

@@ -86,7 +86,7 @@ class RaffleTicketService(
         }
 
         user.tickets -= ticketCount
-        ticketService.saveTicket(TicketHistory(userId = userId, ticketCount = user.tickets))
+        ticketService.saveTicket(TicketHistory(userId = user.userId, ticketCount = user.tickets))
         return ResponseEntity.ok().body(history)
     }
 
