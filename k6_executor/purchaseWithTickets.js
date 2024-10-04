@@ -17,6 +17,7 @@ export default function () {
             'Authorization': 'Bearer '+jwt,
         },
     };
+    http.post(`http://localhost:8080/api/v1/user/tickets/plus_one`, {}, params)
     let res = http.post(url,{},params);
     console.log(res.status)
     console.log(url)

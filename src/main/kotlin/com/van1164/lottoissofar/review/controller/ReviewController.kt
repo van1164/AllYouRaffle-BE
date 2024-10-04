@@ -6,6 +6,7 @@ import com.van1164.lottoissofar.common.dto.review.ReadReviewDto
 import com.van1164.lottoissofar.common.response.CursorPage
 import com.van1164.lottoissofar.review.service.ReviewService
 import io.swagger.v3.oas.annotations.Parameter
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/")
-class ReviewController(
+class ReviewController (
     private val reviewService: ReviewService
 ) {
     @GetMapping("reviews")
