@@ -80,7 +80,7 @@ class UserService(
         try {
             if (userLock.tryLock(10, TimeUnit.SECONDS)) {
                 user.tickets += count
-                ticketService.saveTicket(TicketHistory(user.id,user.tickets))
+                ticketService.saveTicket(TicketHistory(user.userId,user.tickets))
                 userRepository.save(user)
                 return user.tickets
             } else {

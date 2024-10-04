@@ -11,11 +11,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.validation.BindException
 import org.springframework.validation.BindingResult
+import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
-@RestControllerAdvice
+@ControllerAdvice
 class GlobalExceptionHandler(
     val discordService: DiscordService
 ){
@@ -54,6 +55,8 @@ class GlobalExceptionHandler(
     fun handleDefaultException(
         e: GlobalExceptions.NotFoundException
     ) : ErrorResponse{
+        println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXx")
+        println(e.message)
         return ErrorResponse(
             message = e.errorCode.message,
             description = e.message
