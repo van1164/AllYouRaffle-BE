@@ -30,7 +30,7 @@ import org.springframework.test.annotation.Rollback
 import kotlin.test.Test
 
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class RaffleControllerTest @Autowired constructor(
     val userJpaRepository: UserJpaRepository,
     val raffleRepository: RaffleRepository,
