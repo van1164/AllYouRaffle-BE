@@ -1,6 +1,7 @@
 package com.van1164.lottoissofar.common.security
 
 import com.van1164.lottoissofar.common.domain.User
+import com.van1164.lottoissofar.common.exception.GlobalExceptions
 import com.van1164.lottoissofar.user.service.UserService
 import org.springframework.core.MethodParameter
 import org.springframework.security.core.context.SecurityContextHolder
@@ -21,7 +22,6 @@ class UserArgumentResolver(
         return parameter.parameterType == User::class.java
     }
 
-    @Throws(Exception::class)
     override fun resolveArgument(
         parameter: MethodParameter,
         mavContainer: ModelAndViewContainer?,
@@ -31,9 +31,13 @@ class UserArgumentResolver(
         val authentication = SecurityContextHolder.getContext().authentication
         if (authentication != null && authentication.isAuthenticated) {
             val principal = authentication.principal
-            if (principal is CustomUserDetails) {
-                val userId = principal.loginId
-                return userService.findByUserId(userId)
+            try {
+                if (principal is CustomUserDetails) {
+                    val userId = principal.loginId
+                    return userService.findByUserId(userId)
+                }
+            } catch (e: GlobalExceptions.NotFoundException) {
+                throw GlobalExceptions.NotFoundException()
             }
         }
         return null

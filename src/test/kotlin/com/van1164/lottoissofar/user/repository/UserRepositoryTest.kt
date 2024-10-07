@@ -1,5 +1,6 @@
 package com.van1164.lottoissofar.user.repository
 
+import com.van1164.lottoissofar.review.repository.ReviewRepository
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -10,11 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 class UserRepositoryTest @Autowired constructor(
-    val userJpaRepository: UserJpaRepository
+    val userJpaRepository: UserJpaRepository,
+    val reviewRepository: ReviewRepository
 ) {
 
     @BeforeEach
     fun beforeEach() {
+        reviewRepository.deleteAll()
         userJpaRepository.deleteAll()
     }
 

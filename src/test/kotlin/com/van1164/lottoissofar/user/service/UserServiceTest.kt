@@ -1,8 +1,10 @@
 package com.van1164.lottoissofar.user.service
 
 import com.van1164.lottoissofar.common.domain.User
+import com.van1164.lottoissofar.common.dto.user.FcmTokenDto
 import com.van1164.lottoissofar.common.dto.user.PhoneNumberRequestDto
 import com.van1164.lottoissofar.common.dto.user.UserAddressRequestDto
+import com.van1164.lottoissofar.review.repository.ReviewRepository
 import com.van1164.lottoissofar.user.repository.DeleteUserRepository
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
 import kotlinx.datetime.LocalDateTime
@@ -23,6 +25,7 @@ class UserServiceTest @Autowired constructor(
     private val userService: UserService,
     private val userJpaRepository: UserJpaRepository,
     private val deleteUserRepository: DeleteUserRepository,
+    private val reviewRepository: ReviewRepository
 ) {
 
     lateinit var user: User
@@ -30,6 +33,7 @@ class UserServiceTest @Autowired constructor(
 
     @BeforeEach
     fun setup() {
+        reviewRepository.deleteAll()
         userJpaRepository.deleteAll()
         user = User(
             "testUserId",
@@ -129,5 +133,22 @@ class UserServiceTest @Autowired constructor(
         assertNotNull(thenUser)
         assertNotNull(thenUser.phoneNumber)
         assertEquals(phoneNumber, thenUser.phoneNumber)
+    }
+
+    @Test
+    @DisplayName("토큰 저장 테스트")
+    fun saveFcmTokenSuccess() {
+        val currentUser = userJpaRepository.findUserByUserId(user.userId)
+        assertNotNull(currentUser)
+        assertNull(currentUser.fcmToken)
+
+        //when
+        val fcmToken = "testToken"
+        userService.saveFcmToken(currentUser.userId, FcmTokenDto(fcmToken))
+
+        val thenUser = userJpaRepository.findUserByUserId(user.userId)
+        assertNotNull(thenUser)
+        assertNotNull(thenUser.fcmToken)
+        assertEquals(fcmToken, thenUser.fcmToken)
     }
 }
