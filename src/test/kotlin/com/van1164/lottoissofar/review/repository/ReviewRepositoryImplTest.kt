@@ -43,6 +43,7 @@ class ReviewRepositoryImplTest @Autowired constructor(
 
         assertThat(result.content).hasSize(2)
         assertThat(result.content[0].title).isEqualTo("리뷰 2")
+        assertThat(result.content[1].title).isEqualTo("리뷰 1")
     }
 
     @Test
