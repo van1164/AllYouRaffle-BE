@@ -3,18 +3,14 @@ package com.van1164.lottoissofar.question_post.controller
 import com.van1164.lottoissofar.common.domain.QuestionPost
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.dto.question_post.request.CreateQuestionPostRequest
+import com.van1164.lottoissofar.common.dto.question_post.request.UpdateQuestionPostRequest
 import com.van1164.lottoissofar.common.dto.question_post.response.ReadQuestionPostResponse
 import com.van1164.lottoissofar.question_post.service.QuestionPostService
 import io.swagger.v3.oas.annotations.Parameter
 import org.springframework.data.domain.Page
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/question")
@@ -39,6 +35,15 @@ class QuestionPostController(
         @RequestParam size: Int
     ): ResponseEntity<Page<ReadQuestionPostResponse>> {
         val result = questionPostService.getAll(page, size)
+        return ResponseEntity.ok(result)
+    }
+
+    @PutMapping("/{id}")
+    fun update(
+        @PathVariable id: Long,
+        @RequestBody request: UpdateQuestionPostRequest
+    ): ResponseEntity<QuestionPost> {
+        val result = questionPostService.update(id, request)
         return ResponseEntity.ok(result)
     }
 }

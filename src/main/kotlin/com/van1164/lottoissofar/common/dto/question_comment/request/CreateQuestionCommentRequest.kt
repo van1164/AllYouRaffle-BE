@@ -4,8 +4,6 @@ import com.van1164.lottoissofar.common.domain.QuestionComment
 import com.van1164.lottoissofar.common.domain.User
 
 data class CreateQuestionCommentRequest (
-    val userId: String,
-    val nickname: String,
     val questionPostId: Long,
     val body: String,
 ) {
