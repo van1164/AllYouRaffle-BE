@@ -12,7 +12,7 @@ data class QuestionComment (
     @Column(name = "question_post_id")
     val questionPostId: Long,
     @Column(name = "body")
-    val body: String,
+    var body: String,
     @Column(name = "is_adopted")
     val isAdopted: Boolean
 ): BaseEntity()

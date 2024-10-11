@@ -9,10 +9,12 @@ data class QuestionPost (
     val nickname: String,
     @Column(name = "user_id", nullable = false)
     val userId: String,
+    @Column(name = "title", nullable = false)
+    var title: String,
     @Column(name = "body", nullable = false)
-    val body: String,
+    var body: String,
     @Column(name = "is_adopted", nullable = false)
-    val isAdopted: Boolean,
+    var isAdopted: Boolean = false,
     @OneToMany(fetch = FetchType.LAZY)
     val commentList: MutableList<QuestionComment> = mutableListOf()
 ): BaseEntity()

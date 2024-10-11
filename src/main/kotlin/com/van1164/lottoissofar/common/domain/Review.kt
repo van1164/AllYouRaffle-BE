@@ -6,10 +6,10 @@ import jakarta.persistence.*
 @Table(name = "review")
 data class Review(
     @Column(name = "title")
-    val title: String,
+    var title: String,
 
     @Column(name = "description")
-    val description: String,
+    var description: String,
 
     @Column(name = "image_url")
     val imageUrl: String? = null,

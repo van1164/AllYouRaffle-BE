@@ -8,7 +8,6 @@ data class CreateQuestionCommentRequest (
     val nickname: String,
     val questionPostId: Long,
     val body: String,
-    val isAdopted: Boolean
 ) {
     fun toDomain(user: User): QuestionComment {
         return QuestionComment(
@@ -16,7 +15,7 @@ data class CreateQuestionCommentRequest (
             nickname = user.nickname,
             questionPostId = questionPostId,
             body = body,
-            isAdopted = isAdopted
+            isAdopted = false
         )
     }
 }

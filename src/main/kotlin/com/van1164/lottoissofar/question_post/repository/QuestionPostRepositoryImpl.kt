@@ -23,6 +23,7 @@ class QuestionPostRepositoryImpl(
                     questionPost.nickname,
                     questionPost.userId,
                     questionPost.createdDate,
+                    questionPost.title,
                     questionPost.body,
                     questionPost.isAdopted
                 )
