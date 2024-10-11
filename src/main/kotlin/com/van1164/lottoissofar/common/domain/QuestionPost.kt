@@ -16,5 +16,6 @@ data class QuestionPost (
     @Column(name = "is_adopted", nullable = false)
     var isAdopted: Boolean = false,
     @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_post_id")
     val commentList: MutableList<QuestionComment> = mutableListOf()
 ): BaseEntity()

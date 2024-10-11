@@ -4,6 +4,7 @@ import com.van1164.lottoissofar.common.domain.QuestionPost
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.dto.question_post.request.CreateQuestionPostRequest
 import com.van1164.lottoissofar.common.dto.question_post.request.UpdateQuestionPostRequest
+import com.van1164.lottoissofar.common.dto.question_post.response.ReadQuestionPostDetailsResponse
 import com.van1164.lottoissofar.common.dto.question_post.response.ReadQuestionPostResponse
 import com.van1164.lottoissofar.common.exception.ErrorCode
 import com.van1164.lottoissofar.common.exception.GlobalExceptions
@@ -25,8 +26,11 @@ class QuestionPostService(
         return questionPostRepository.findAllPaged(pageable).map { ReadQuestionPostResponse.of(it) }
     }
 
-    fun update(id: Long, request: UpdateQuestionPostRequest): QuestionPost
-    {
+    fun getDetails(id: Long): ReadQuestionPostDetailsResponse {
+        return questionPostRepository.findDetails(id)
+    }
+
+    fun update(id: Long, request: UpdateQuestionPostRequest): QuestionPost {
         val post = questionPostRepository.findById(id).orElseThrow {
             GlobalExceptions.NotFoundException(
                 ErrorCode.NOT_FOUND
