@@ -40,7 +40,7 @@ out/
 .kotlin
 
 k6-v0.51.0-windows-amd64/
-src/main/resources/application-*.properties
+src/main/resources/application*.properties
 src/main/kotlin/com/van1164/lottoissofar/common/service/DBInit.kt
 
 k6-v0.51.0-macos-amd64/
@@ -48,3 +48,8 @@ k6-v0.51.0-macos-amd64/
 src/main/resources/allyouraffle-f271f-firebase-adminsdk-4nzuk-d1e14643e2.json
 
 src/main/resources/allyouraffleFirebaseKey.json
+
+src/main/resources/application.properties
+src/main/resources/spring-profile/*.properties
+src/main/resources/spring-profile/sub/*.properties
+
