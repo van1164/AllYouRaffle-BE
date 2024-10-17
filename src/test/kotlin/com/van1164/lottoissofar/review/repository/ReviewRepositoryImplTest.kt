@@ -2,10 +2,13 @@ package com.van1164.lottoissofar.review.repository
 
 import com.van1164.lottoissofar.common.domain.Review
 import com.van1164.lottoissofar.common.domain.User
+import com.van1164.lottoissofar.common.domain.WinnerHistory
+import com.van1164.lottoissofar.common.domain.WinnerHistoryStatus
 import com.van1164.lottoissofar.fixture.UserFixture
 import com.van1164.lottoissofar.fixture.builder.ReviewFixtureBuilder
 import com.van1164.lottoissofar.fixture.builder.UserFixtureBuilder
 import com.van1164.lottoissofar.user.repository.UserJpaRepository
+import com.van1164.lottoissofar.winner_history.repository.WinnerHistoryRepository
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Assertions.*
@@ -19,21 +22,30 @@ import org.springframework.boot.test.context.SpringBootTest
 @SpringBootTest
 class ReviewRepositoryImplTest @Autowired constructor(
     val reviewRepository: ReviewRepository,
-    val userRepository: UserJpaRepository
+    val userRepository: UserJpaRepository,
+    val winnerHistoryRepository: WinnerHistoryRepository
 ){
     lateinit var user: User
+    lateinit var winnerHistory: WinnerHistory
 
     @BeforeEach
     fun setUp() {
         user = UserFixture.createUser()
         userRepository.save(user)
+        winnerHistory = WinnerHistory(
+            raffleId = 0L,
+            userId = user.userId,
+            status = WinnerHistoryStatus.BEFORE,
+            review = null
+        )
+        winnerHistoryRepository.save(winnerHistory)
     }
 
     @Test
     @DisplayName("findAllPaged는 요청 개수만큼 생성 역순으로 정렬한 결과를 반환해야 한다.")
     fun findAllPaged() {
-        val review1: Review = ReviewFixtureBuilder().user(user).title("리뷰 1").build()
-        val review2: Review = ReviewFixtureBuilder().user(user).title("리뷰 2").build()
+        val review1: Review = ReviewFixtureBuilder().user(user).winnerHistory(winnerHistory).title("리뷰 1").build()
+        val review2: Review = ReviewFixtureBuilder().user(user).winnerHistory(winnerHistory).title("리뷰 2").build()
         reviewRepository.save(review1)
         reviewRepository.save(review2)
         val cursor: Long = Long.MAX_VALUE
@@ -51,8 +63,8 @@ class ReviewRepositoryImplTest @Autowired constructor(
     fun findAllPagedWithUser() {
         val user2: User = UserFixtureBuilder().email("user2@test.com").build()
         userRepository.save(user2)
-        val review1: Review = ReviewFixtureBuilder().user(user).title("리뷰 1").build()
-        val review2: Review = ReviewFixtureBuilder().user(user2).title("리뷰 2").build()
+        val review1: Review = ReviewFixtureBuilder().user(user).winnerHistory(winnerHistory).title("리뷰 1").build()
+        val review2: Review = ReviewFixtureBuilder().user(user2).winnerHistory(winnerHistory).title("리뷰 2").build()
         reviewRepository.save(review1)
         reviewRepository.save(review2)
         val cursor: Long = Long.MAX_VALUE
