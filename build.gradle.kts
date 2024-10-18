@@ -69,7 +69,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     // ## Lombok
-    compileOnly("org.projectlombok:lombok") // 코드 자동 생성을 위한 Lombok
+    implementation("org.projectlombok:lombok") // 코드 자동 생성을 위한 Lombok
     annotationProcessor("org.projectlombok:lombok") // Lombok 애노테이션 처리기
 
     // ## 테스트 관련 의존성
