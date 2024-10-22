@@ -4,6 +4,7 @@ import com.van1164.lottoissofar.common.domain.Review
 import com.van1164.lottoissofar.common.domain.User
 import com.van1164.lottoissofar.common.domain.WinnerHistory
 import com.van1164.lottoissofar.common.domain.WinnerHistoryStatus
+import com.van1164.lottoissofar.common.log.logger
 import com.van1164.lottoissofar.fixture.UserFixture
 import com.van1164.lottoissofar.fixture.builder.ReviewFixtureBuilder
 import com.van1164.lottoissofar.fixture.builder.UserFixtureBuilder
@@ -27,6 +28,7 @@ class ReviewRepositoryImplTest @Autowired constructor(
 ){
     lateinit var user: User
     lateinit var winnerHistory: WinnerHistory
+    val log = logger()
 
     @BeforeEach
     fun setUp() {
@@ -71,6 +73,7 @@ class ReviewRepositoryImplTest @Autowired constructor(
         val size = 2
 
         val result = reviewRepository.findAllPagedWithUser(user2, cursor, size)
+        log.info("test")
 
         assertThat(result.content).hasSize(1)
         assertThat(result.content[0].title).isEqualTo("리뷰 2")

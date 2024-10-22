@@ -72,6 +72,10 @@ dependencies {
     implementation("org.projectlombok:lombok") // 코드 자동 생성을 위한 Lombok
     annotationProcessor("org.projectlombok:lombok") // Lombok 애노테이션 처리기
 
+    // ## Logging
+    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    implementation("org.springframework.boot:spring-boot-starter-logging:3.1.0")
+
     // ## 테스트 관련 의존성
     testImplementation("org.springframework.boot:spring-boot-starter-test") // 통합 테스트 지원
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5") // JUnit5와 Kotlin 테스트 통합
