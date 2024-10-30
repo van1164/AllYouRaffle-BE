@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
 @Repository
-interface TicketHistoryRepository : JpaRepository<TicketHistory, Long> {
+interface TicketHistoryRepository : JpaRepository<TicketHistory, Long>, TicketHistoryRepositoryCustom {
     fun findAllByUserIdOrderByCreatedDateDesc(userId: String): List<TicketHistory>
     fun findAllByUserIdAndCreatedDateAfter(userId: String, findTime:LocalDateTime ): List<TicketHistory>
 }
