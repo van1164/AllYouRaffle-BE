@@ -1,6 +1,7 @@
 package com.van1164.lottoissofar.ticket.controller
 
 import com.van1164.lottoissofar.common.domain.TicketHistory
+import com.van1164.lottoissofar.common.dto.ticket.response.TicketHistoryGraphResponse
 import com.van1164.lottoissofar.common.response.CursorPage
 import com.van1164.lottoissofar.ticket.service.TicketService
 import org.springframework.web.bind.annotation.*
@@ -25,7 +26,7 @@ class TicketController(
         @RequestParam(required = false) endDate: LocalDate?,
         @RequestParam(required = false) cursor: Long?,
         @RequestParam(required = false, defaultValue = "10") size: Int
-    ): CursorPage<Double> {
+    ): TicketHistoryGraphResponse<TicketService.DensityPoint> {
         val effectiveCursor = cursor ?: Long.MAX_VALUE
 
         return ticketService.getDeviationPage(userId, endDate, effectiveCursor, size)
