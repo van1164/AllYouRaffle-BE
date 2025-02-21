@@ -14,7 +14,7 @@ import org.springframework.data.support.PageableExecutionUtils
 class RaffleRepositoryImpl(
     em: EntityManager
 ) :RaffleRepositoryCustom {
-    private val query = JPAQueryFactory(em);
+    private val query = JPAQueryFactory(em)
 
     override fun findAllByStatusIsACTIVE(pageable: Pageable): Page<Raffle> {
         val list = query

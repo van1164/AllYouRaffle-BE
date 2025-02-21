@@ -40,9 +40,7 @@ data class Raffle(
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "raffle", cascade = [CascadeType.ALL])
     var purchaseHistoryList : MutableList<PurchaseHistory> = mutableListOf()
-) : BaseEntity() {
-
-}
+) : BaseEntity()
 
 enum class RaffleStatus {
     ACTIVE, INACTIVE, COMPLETED
