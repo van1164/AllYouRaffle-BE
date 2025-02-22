@@ -1,3 +1,5 @@
+![app_image.png](docs/app_image.png)
+
 # 상품 추첨 서비스
 
 ## 프로젝트 기간
